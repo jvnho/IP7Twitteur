@@ -3,7 +3,7 @@ $(document).ready(function(){
 });
 
 function checkInputEmpty(){
-    //TODO
+    //TODO: voir si input possede la class is-invalid ou valid dans ce cas on active ou desactive le button
 }
 
 function checkFormValidity(){
@@ -16,15 +16,12 @@ function checkFormValidity(){
         if(alreadyExists(username, true) == true){
             $(this).siblings(".invalid-feedback").html("Nom d'utilisateur déjà existant.");
             $(this).addClass("is-invalid");
-            return false;
         } else if(hasWhiteSpace(username) == true){ // espaces début et au milieu sont dérangeants
             $(this).siblings(".invalid-feedback").html("Nom d'utilisateur invalide.");
             $(this).addClass("is-invalid");
-            return false;
         } else if(username === ''){
             $(this).siblings(".invalid-feedback").html("Veillez remplir ce champ");
             $(this).addClass("is-invalid");
-            return false;
         }  else {
             $(this).addClass("is-valid");
         }
@@ -39,11 +36,9 @@ function checkFormValidity(){
         if(alreadyExists(email, true) == true){
             $(this).siblings(".invalid-feedback").html("Adresse mail déjà utilisée.");
             $(this).addClass("is-invalid");
-            return false;
         } else if(checkEmailFormat(email) == false){
             $(this).siblings(".invalid-feedback").html("Veillez rentrer une adresse e-mail correct.");
             $(this).addClass("is-invalid");
-            return false;
         } else {
             $(this).addClass("is-valid");
         }
@@ -61,7 +56,6 @@ function checkFormValidity(){
             $(this).siblings(".invalid-feedback").html("Mots de passe non identiques");
             password.addClass("is-invalid");
             passwordConfirm.addClass("is-invalid");
-            return false;
         }
     });
 
