@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS projetsangsiri;
 
-CREATE DATABSE projetsangsiri;
+CREATE DATABASE projetsangsiri;
 
 USE projetsangsiri;
 
@@ -16,7 +16,7 @@ CREATE TABLE user(
 	username VARCHAR(16) NOT NULL,
 	email VARCHAR(24) NOT NULL,
 	password VARCHAR(128) NOT NULL,
-	picture DEFAULT "default.jpg",
+	picture VARCHAR (25) DEFAULT 'default.jpg',
 	PRIMARY KEY(user_id),
 	UNIQUE(username),
 	UNIQUE(email),	
@@ -34,13 +34,13 @@ CREATE TABLE user_subscription(
 -- faire un UNION our prendre en compte le at_everyone--
 -- gérer au côté client la limite de 280 caractères--
 CREATE TABLE publication(
-	publication_id INTEGER PRIMARY KEY AUTO_INCREMENT,
+	publication_id INTEGER AUTO_INCREMENT,
 	author_id INTEGER NOT NULL,
 	date DATE NOT NULL,
 	content VARCHAR(280) NOT NULL,
 	at_everyone BOOLEAN DEFAULT false,
 	PRIMARY KEY(publication_id),
-	FOREIGN KEY (user_id) REFERENCES user(user_id) 
+	FOREIGN KEY (author_id) REFERENCES user(user_id) 
 );
 
 CREATE TABLE publication_reaction(
