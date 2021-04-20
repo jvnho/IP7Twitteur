@@ -27,9 +27,9 @@ const pool = mysql.createPool(
 
 app.get("/register", function(req, res){
     if(req.session.initialized)
-        res.render("register.ejs");
-    else 
         res.redirect('/home/');
+    else 
+        res.render("register.ejs");     
 });
 
 app.post("/register/existence", function(req, res){
@@ -37,7 +37,7 @@ app.post("/register/existence", function(req, res){
     {
         if(err) throw err
         if(rows.length > 0)
-            res.send({existence : true}); //nom dutilisateur ou email déjà existant
+            res.send({existence : true}); //nom d'utilisateur ou email déjà existant
         else 
         res.send({existence : false}); //OK
     });
@@ -52,9 +52,7 @@ app.post("/register", function(req, res){
     pool.query(query, function(err,rows,fields)
     {
         if(err) throw err;
-        req.session.initialized = true;
-        req.session.username = rows[0].username;
-        req.session.user_id = parseInt(rows[0].user_id);
+        logInUser(username,password)
         res.redirect('/home/');
     });
 });
@@ -63,28 +61,37 @@ app.get("/register/*", function(req, res){
     res.redirect("/register/");
 });
 
-app.get("/login", function(req, res){
-    if(req.session.initialized)
-        res.render("login.ejs");
-    else 
-        res.redirect('/home/');
-});
-
-app.post("/login", function(req, res){
-    var login = req.body.username;
-    var password = md5(req.body.password);
+function logInUser(username, password){
     var query = "SELECT * FROM user WHERE username='"+username+"' AND password='"+password+"'";
-    pool.query(query, function(err,rows,fieds){
+    pool.query(query, function(err,rows,fieds)
+    {
         if(err) throw err;
         if(rows.length > 0){
             req.session.initialized = true;
             req.session.username = rows[0].username;
             req.session.user_id = parseInt(rows[0].user_id);
-            res.redirect('/home/');
+            return true;
         } else {
-            res.send({error: "Utilisateur non existant ou mot de passe incorrect"});
+            return false;
         }
     });
+}
+
+app.get("/login", function(req, res){
+    if(req.session.initialized)
+        res.redirect('/home/');
+    else 
+        res.render("login.ejs");  
+});
+
+app.post("/login", function(req, res){
+    var login = req.body.username;
+    var password = md5(req.body.password);
+    if(logInUser(login,password) == true){
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(400);
+    }
 });
 
 app.get("/login/*", function(req, res){
