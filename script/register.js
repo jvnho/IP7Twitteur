@@ -1,9 +1,40 @@
 $(document).ready(function(){
     checkFormValidity();
+    submitFormHandler();
 });
 
-function checkInputEmpty(){
-    //TODO: voir si input possede la class is-invalid ou valid dans ce cas on active ou desactive le button
+function submitFormHandler(){
+    $("#submit").click(function(event){
+        event.preventDefault();
+        var formValid = true;
+        $('.form-control').each(function(){
+            if($(this).val() === "" || $(this).hasClass("is-valid") == false){
+                $(this).addClass("is-invalid");
+                formValid = false;
+            }
+        });
+        if(formValid)
+        {
+            var username = $('#username').val();
+            var password = $('#password').val();
+            var email = $('#email').val();
+            $.ajax({
+                type: "post",
+                url: '/register/',
+                data: {username: username, password: password, email: email},
+                statusCode: 
+                {
+                    400: function() {
+                        showAlert();
+                        $(".form-control").addClass("is-invalid");
+                    },
+                    200: function(){
+                        window.location.href = '/home/';
+                    }
+                }
+            });
+        }
+    });
 }
 
 function checkFormValidity(){
@@ -82,4 +113,17 @@ function checkEmailFormat(email){
 
 function hasWhiteSpace(s){
     return s.indexOf(' ') >= 0;
+}
+
+function showAlert(){
+    $("body").prepend(
+    '<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">'+
+        'Une erreur est survenue, veillez réessayer.'+
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
+        '<span aria-hidden="true">&times;</span>'+
+        '</button>'+
+    '</div>');
+        $('.alert').delay(2000).fadeOut('slow', function(){
+            $(this).remove();
+        })
 }

@@ -13,14 +13,13 @@ DROP TABLE IF EXISTS publication_hashtag;
 
 CREATE TABLE user(
 	user_id INTEGER AUTO_INCREMENT,
-	username VARCHAR(16) NOT NULL,
-	email VARCHAR(24) NOT NULL,
+	username VARCHAR(32) NOT NULL,
+	email VARCHAR(64) NOT NULL,
 	password VARCHAR(128) NOT NULL,
 	picture VARCHAR (25) DEFAULT 'default.jpg',
 	PRIMARY KEY(user_id),
 	UNIQUE(username),
-	UNIQUE(email),	
-	UNIQUE(picture)
+	UNIQUE(email)
 );
 
 CREATE TABLE user_subscription(
@@ -31,8 +30,6 @@ CREATE TABLE user_subscription(
 	PRIMARY KEY(user_id, subscribe_to)
 );
 
--- faire un UNION our prendre en compte le at_everyone--
--- gérer au côté client la limite de 280 caractères--
 CREATE TABLE publication(
 	publication_id INTEGER AUTO_INCREMENT,
 	author_id INTEGER NOT NULL,

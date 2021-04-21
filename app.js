@@ -13,6 +13,7 @@ app.use(session({secret: 'lalalala', saveUninitialized: true, resave: true}));
 
 app.use("/", express.static(__dirname));
 app.use("/", express.static(__dirname + '/views/'));
+app.use("/", express.static(__dirname + '/public/'));
 
 app.set('view engine','ejs');
 
@@ -47,13 +48,13 @@ app.post("/register", function(req, res){
     var username = req.body.username;
     var password = md5(req.body.password);
     var email = req.body.email;
-    var query = "INSERT INTO user(username,email,password) VALUES('"+username+"','"+email+"','"+password+"')";
+    var query = "INSERT INTO user(username,email,password) VALUES('"+username+"','"+email+"','"+password+"');";
     //faire une union de user sinon on redirect vers la page de login plutot
     pool.query(query, function(err,rows,fields)
     {
         if(err) throw err;
-        logInUser(username,password)
-        res.redirect('/home/');
+        //logInUser(req, username,password)
+        res.sendStatus(200);
     });
 });
 
@@ -61,8 +62,17 @@ app.get("/register/*", function(req, res){
     res.redirect("/register/");
 });
 
-function logInUser(username, password){
-    var query = "SELECT * FROM user WHERE username='"+username+"' AND password='"+password+"'";
+app.get("/login/", function(req, res){
+    if(req.session.initialized)
+        res.redirect('/home/');
+    else 
+        res.render("login.ejs");  
+});
+
+app.post("/login/", function(req, res){
+    var username = req.body.username;
+    var password = md5(req.body.password);
+    var query = "SELECT * FROM user WHERE username='"+username+"' AND password='"+password+"';";
     pool.query(query, function(err,rows,fieds)
     {
         if(err) throw err;
@@ -70,28 +80,11 @@ function logInUser(username, password){
             req.session.initialized = true;
             req.session.username = rows[0].username;
             req.session.user_id = parseInt(rows[0].user_id);
-            return true;
+            res.sendStatus(200);
         } else {
-            return false;
+            res.sendStatus(400);
         }
     });
-}
-
-app.get("/login", function(req, res){
-    if(req.session.initialized)
-        res.redirect('/home/');
-    else 
-        res.render("login.ejs");  
-});
-
-app.post("/login", function(req, res){
-    var login = req.body.username;
-    var password = md5(req.body.password);
-    if(logInUser(login,password) == true){
-        res.sendStatus(200);
-    } else {
-        res.sendStatus(400);
-    }
 });
 
 app.get("/login/*", function(req, res){

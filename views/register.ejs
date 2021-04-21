@@ -12,6 +12,15 @@
     </head>
 
     <body>
+        <nav id="nav" class="navbar navbar-expand-sm bg-dark">
+
+        </nav>
+        <script>
+        $(function()
+        {
+            $("#nav").load("../navbar.html");
+        });
+        </script>
         <div class="container"> 
             <form action="/register/" method="post" class="needs-validation" id="registerForm" novalidate>
                 <div class="form-group">
