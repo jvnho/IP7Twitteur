@@ -92,8 +92,7 @@ app.get("/login/*", function(req, res){
 });
 
 app.get("/home", function(req, res){
-    //res.render("home.ejs");
-    res.redirect("/register/");
+    res.render("home.ejs");
 });
 
 app.get("/home/*", function(req, res){
