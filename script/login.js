@@ -44,14 +44,5 @@ function inputTextHandler(){
 }
 
 function showAlert(){
-    $("body").prepend(
-    '<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">'+
-        'Utilisateur non existant ou mot de passe incorrect.'+
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
-        '<span aria-hidden="true">&times;</span>'+
-        '</button>'+
-    '</div>');
-        $('.alert').delay(2000).fadeOut('slow', function(){
-            $(this).remove();
-        })
+    $('#notify-alert').removeClass('d-none');
 }
