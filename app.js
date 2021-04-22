@@ -40,7 +40,7 @@ app.post("/register/existence", function(req, res){
         if(rows.length > 0)
             res.send({existence : true}); //nom d'utilisateur ou email déjà existant
         else 
-        res.send({existence : false}); //OK
+            res.send({existence : false}); //OK
     });
 });
 

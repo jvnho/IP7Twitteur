@@ -44,18 +44,24 @@ function checkFormValidity(){
         var username = $(this).val();
         $(this).removeClass("is-invalid");
         $(this).removeClass("is-valid");
-        if(alreadyExists(username, true) == true){
-            $(this).siblings(".invalid-feedback").html("Nom d'utilisateur déjà existant.");
-            $(this).addClass("is-invalid");
-        } else if(hasWhiteSpace(username) == true){ // espaces début et au milieu sont dérangeants
-            $(this).siblings(".invalid-feedback").html("Nom d'utilisateur invalide.");
-            $(this).addClass("is-invalid");
-        } else if(username === ''){
-            $(this).siblings(".invalid-feedback").html("Veillez remplir ce champ");
-            $(this).addClass("is-invalid");
-        }  else {
-            $(this).addClass("is-valid");
-        }
+        $.when(alreadyExists(username, true)).done(function(res)
+        {
+            var usernameInput = $("#username");
+            if(res.existence)
+            {
+                usernameInput.siblings(".invalid-feedback").html("Nom d'utilisateur déjà existant.");
+                usernameInput.addClass("is-invalid");
+            }
+            else if(hasWhiteSpace(username) == true){ // espaces début et au milieu sont dérangeants
+                usernameInput.siblings(".invalid-feedback").html("Nom d'utilisateur invalide.");
+                usernameInput.addClass("is-invalid");
+            } else if(username === ''){
+                usernameInput.siblings(".invalid-feedback").html("Veillez remplir ce champ");
+                usernameInput.addClass("is-invalid");
+            } else {
+                usernameInput.addClass("is-valid");
+            }
+        });
     });
 
     $("#email").change(function()
@@ -64,15 +70,19 @@ function checkFormValidity(){
         var email = $(this).val();
         $(this).removeClass("is-invalid");
         $(this).removeClass("is-valid");
-        if(alreadyExists(email, true) == true){
-            $(this).siblings(".invalid-feedback").html("Adresse mail déjà utilisée.");
-            $(this).addClass("is-invalid");
-        } else if(checkEmailFormat(email) == false){
-            $(this).siblings(".invalid-feedback").html("Veillez rentrer une adresse e-mail correct.");
-            $(this).addClass("is-invalid");
-        } else {
-            $(this).addClass("is-valid");
-        }
+        $.when(alreadyExists(email, false)).done(function(res){
+            var emailInput = $("#email");
+            if(res.existence)
+            {
+                emailInput.siblings(".invalid-feedback").html("Adresse mail déjà utilisée.");
+                emailInput.addClass("is-invalid");
+            } else if(checkEmailFormat(email) == false){
+                emailInput.siblings(".invalid-feedback").html("Veillez rentrer une adresse e-mail correct.");
+                emailInput.addClass("is-invalid");
+            } else {
+                emailInput.addClass("is-valid");
+            }
+        });
     });
 
     $("#password, #passwordConfirm").keyup(function(){
@@ -89,20 +99,20 @@ function checkFormValidity(){
             passwordConfirm.addClass("is-invalid");
         }
     });
-
-    return true;
 }
 
 //vérifie si username ou l'email existe dans la BDD
-function alreadyExists(data, username){
+function alreadyExists(data, checkUsername){
     var query;
-    if(username == true)
+    if(checkUsername == true)
         query = "SELECT username FROM user WHERE username = '" + data + "';";
     else 
-    query = "SELECT email FROM user WHERE email = '" + data + "';";
-    $.post("/register/existence", {query : query}, function(data){
-        return data.existence; //true: email or username already exist
-    });
+        query = "SELECT email FROM user WHERE email = '" + data + "';";
+    return $.ajax({
+        method: "POST",
+        url: "/register/existence",
+        data : {query : query},
+    }).done();
 }
 
 function checkEmailFormat(email){
@@ -116,14 +126,8 @@ function hasWhiteSpace(s){
 }
 
 function showAlert(){
-    $("body").prepend(
-    '<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">'+
-        'Une erreur est survenue, veillez réessayer.'+
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
-        '<span aria-hidden="true">&times;</span>'+
-        '</button>'+
-    '</div>');
-        $('.alert').delay(2000).fadeOut('slow', function(){
-            $(this).remove();
-        })
+    $('.alert').removeClass('d-none');
+    setTimeout(function (){
+        $('.alert').addClass('d-none');
+    }, 3000);
 }
