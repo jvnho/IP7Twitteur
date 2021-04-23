@@ -1,41 +1,41 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
-        <title>Accueil</title>
-        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
-        <script src="../script/home.js"></script>
-    </head>
+<head>
+    <title>Accueil</title>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script src="../script/home.js"></script>
+</head>
 
-    <body>
-        <nav id="nav">
+<body>
+    <nav id="nav">
 
-        </nav>
-        <script>
-        $(function()
-        {
-            $("#nav").load("../navbar.html");
-        });
-        </script>
-        <div class="container"> 
-            <div class="container-fluid">
-                <div class="btn-group">
-                    <button type="button" id="showAll" class="btn btn-primary">Tout le monde</button>
-                    <button type="button" id="showSubscriptions" class="btn btn-primary">Mes abonnements</button>
-                    <button type="button" id="showMsgToMe" class="btn btn-primary">Mes mentions</button>
-                </div>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Something clever..">
-                    <div class="input-group-append">
-                        <button class="btn btn-primary" type="button">Lancer la recherche</button>
-                    </div>
+    </nav>
+    <script>
+    $(function()
+    {
+        $("#nav").load("../navbar.html");
+    });
+    </script>
+    <div class="container"> 
+        <div class="container-fluid">
+            <div class="btn-group">
+                <button type="button" id="showAll" class="btn btn-primary">Tout le monde</button>
+                <button type="button" id="showSubscriptions" class="btn btn-primary">Mes abonnements</button>
+                <button type="button" id="showMsgToMe" class="btn btn-primary">Mes mentions</button>
+            </div>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Something clever..">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">Lancer la recherche</button>
                 </div>
             </div>
         </div>
-    </body>
+    </div>
+</body>
 </html>
