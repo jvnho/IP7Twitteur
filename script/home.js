@@ -12,6 +12,20 @@ var userTextArea = new Vue({
     el: '#user-form-publication'
 })
 
+Vue.component('publication', {
+    props: publications,
+    template:
+    `
+    <div class="media border p-3">
+        <img src="../img/{{publication.picture}}" alt="{{publication.picture}}" class="mr-3 mt-3 rounded-circle" style="width:60px;">
+        <div class="media-body">
+            <h4>{{publication.username}} <small><i>{{publication.date}}</i></small></h4>
+            <p>{{publication.content}}</p>
+        </div>
+    </div>
+    ` 
+})
+
 $(document).ready(function(){
     publicationFormHandler();
 });

@@ -43,6 +43,8 @@
             <textarea class="form-control" rows="3" id="publication-text" style="resize:none;"></textarea>
             <button id="publish-message" class="btn btn-primary">Publier</button>
         </div>
+
+        <publication v-for="publication in publications" v-bind:key="publication.publication_id"></publication>
     </div>
 
     <script src="../script/home.js"></script>

@@ -101,26 +101,39 @@ app.get("/home", (req, res) => {
             SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
             SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
     } else {
-        switch(req.session.publicationType){
+        switch(req.session.publicationType)
+        {
             case "everyone":    
                 query = `
                 SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
                 SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
                 break;
             case "subscribed":   
-                query = ``; 
+                query = `
+                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
+                SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
                 break;
             case "mentionned":    
-                query = ``;
+                query = `
+                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
+                SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
                 break;
             case "liked":  
-                query = ``;  
+                query = `
+                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
+                SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
                 break;
+            default:
+                query = `
+                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
+                SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
+                break;
+
         }
     }
-    //const result = await pool.query(query);
-    res.render("home.ejs", {publication : publication, connectionStatus : (req.session.initialized ? true : false)});
-    //pool.query(query, (req,res) => { });
+    pool.query(query, (err,rows,fields) => {
+        res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false)});
+    });
 });
 
 app.post("/home/publish/", (req,res) => {
