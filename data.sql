@@ -33,7 +33,7 @@ CREATE TABLE user_subscription(
 CREATE TABLE publication(
 	publication_id INTEGER AUTO_INCREMENT,
 	author_id INTEGER NOT NULL,
-	date DATE NOT NULL,
+	date DATETIME NOT NULL,
 	content VARCHAR(280) NOT NULL,
 	at_everyone BOOLEAN DEFAULT false,
 	PRIMARY KEY(publication_id),
