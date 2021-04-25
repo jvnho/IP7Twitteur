@@ -2,14 +2,16 @@
 
 <html>
 <head>
+    <script>
+        var isConnected = <%= connectionStatus %>;
+    </script>
     <title>Accueil</title>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
-    <script src="../script/home.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 </head>
 
 <body>
@@ -22,20 +24,27 @@
         $("#nav").load("../navbar.html");
     });
     </script>
-    <div class="container"> 
-        <div class="container-fluid">
+    <div id="app" class=container-fluid>
+        <div v-if="isConnected" id="user-menu-button" class="container-fluid">
             <div class="btn-group">
                 <button type="button" id="showAll" class="btn btn-primary">Tout le monde</button>
                 <button type="button" id="showSubscriptions" class="btn btn-primary">Mes abonnements</button>
                 <button type="button" id="showMsgToMe" class="btn btn-primary">Mes mentions</button>
+                <button type="button" id="showMsgToMe" class="btn btn-primary">Publications aimées</button>  
             </div>
             <div class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="Something clever..">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="button">Lancer la recherche</button>
-                </div>
+                <button class="btn btn-primary" type="button">Lancer la recherche</button>
             </div>
         </div>
+
+        <div id="user-form-publication" v-if="isConnected" class="container">
+            <p id="user-publication-error" style="color:red;"></p>
+            <textarea class="form-control" rows="3" id="publication-text" style="resize:none;"></textarea>
+            <button id="publish-message" class="btn btn-primary">Publier</button>
+        </div>
     </div>
+
+    <script src="../script/home.js"></script>
 </body>
 </html>

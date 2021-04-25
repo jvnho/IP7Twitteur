@@ -43,7 +43,7 @@ CREATE TABLE publication(
 CREATE TABLE publication_reaction(
 	publication_id INTEGER, 
 	reactor_id INTEGER,
-	liked BOOLEAN DEFAULT NULL,
+	liked BOOLEAN DEFAULT false,
 	PRIMARY KEY(publication_id, reactor_id),
 	FOREIGN KEY (publication_id) REFERENCES publication(publication_id),
 	FOREIGN KEY (reactor_id) REFERENCES user(user_id)
