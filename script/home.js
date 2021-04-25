@@ -1,11 +1,11 @@
-var userMenu = new Vue({
+new Vue({
     data : {
         isConnected : isConnected
     },
     el: '#user-menu-button'
 })
 
-var userTextArea = new Vue({
+new Vue({
     data : {
         isConnected : isConnected
     },
@@ -13,10 +13,10 @@ var userTextArea = new Vue({
 })
 
 Vue.component('publication', {
-    props: publications,
+    props: ['publication'],
     template:
     `
-    <div class="media border p-3">
+    <div class="publication media border p-3">
         <img src="../img/{{publication.picture}}" alt="{{publication.picture}}" class="mr-3 mt-3 rounded-circle" style="width:60px;">
         <div class="media-body">
             <h4>{{publication.username}} <small><i>{{publication.date}}</i></small></h4>
@@ -24,6 +24,13 @@ Vue.component('publication', {
         </div>
     </div>
     ` 
+})
+
+new Vue({
+    el: '#publications-container',
+    data: {
+        publications : publications
+    }
 })
 
 $(document).ready(function(){
