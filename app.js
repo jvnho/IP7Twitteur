@@ -98,13 +98,13 @@ app.get("/home", (req, res) => {
     var query = '';
     if(req.session.initialized == false){
         query = `
-            SELECT * FROM publication as p, user as u WHERE p.at_everyone = true AND p.author_id = u.user_id;
+            SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
             SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
     } else {
         switch(req.session.publicationType){
             case "everyone":    
                 query = `
-                SELECT * FROM publication as p, user as u WHERE p.at_everyone = true AND p.author_id = u.user_id;
+                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
                 SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
                 break;
             case "subscribed":   
@@ -118,7 +118,8 @@ app.get("/home", (req, res) => {
                 break;
         }
     }
-    res.render("home.ejs", {connectionStatus : (req.session.initialized ? true : false)});
+    //const result = await pool.query(query);
+    res.render("home.ejs", {publication : publication, connectionStatus : (req.session.initialized ? true : false)});
     //pool.query(query, (req,res) => { });
 });
 
