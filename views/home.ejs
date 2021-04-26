@@ -47,7 +47,7 @@
             <button id="publish-message" class="btn btn-primary">Publier</button>
         </div>
 
-        <div id="publications-container" class="container-fluid">
+        <div id="publications-container" class="container">
             <publication v-for="publication in publications" v-bind:key="publication.publication_id" v-bind:publication="publication"></publication>
         </div>
     </div>

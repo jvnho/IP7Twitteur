@@ -16,8 +16,8 @@ Vue.component('publication', {
     props: ['publication'],
     template:
     `
-    <div class="publication media border p-3">
-        <img src="../img/{{publication.picture}}" alt="{{publication.picture}}" class="mr-3 mt-3 rounded-circle" style="width:60px;">
+    <div class="publication media border p-3 mt-5">
+        <img v-bind:src="'../img/'+publication.picture" alt="" class="mr-3 mt-3 rounded-circle" style="width:60px;">
         <div class="media-body">
             <h4>{{publication.username}} <small><i>{{publication.date}}</i></small></h4>
             <p>{{publication.content}}</p>
@@ -29,7 +29,7 @@ Vue.component('publication', {
 new Vue({
     el: '#publications-container',
     data: {
-        publications : publications
+        publications : publications,
     }
 })
 
