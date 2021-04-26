@@ -51,10 +51,10 @@ CREATE TABLE publication_reaction(
 
 CREATE TABLE publication_mention(
 	publication_id INTEGER,
-	user_id INTEGER,
-	FOREIGN KEY (user_id) REFERENCES user(user_id),
+	user_mentionned INTEGER,
+	FOREIGN KEY (user_mentionned) REFERENCES user(user_id),
 	FOREIGN KEY (publication_id) REFERENCES publication(publication_id),
-	PRIMARY KEY(publication_id, user_id)
+	PRIMARY KEY(publication_id, user_mentionned)
 );
 
 CREATE TABLE publication_hashtag(

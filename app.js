@@ -96,39 +96,48 @@ app.get("/login/*", (req, res) => {
 app.get("/home", (req, res) => {
     var publications = [];
     var query = '';
-    if(req.session.initialized == false){
+    if(req.session.initialized !== true){
         query = `
-            SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
-            SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
+            SELECT * FROM publication as p, user as u WHERE p.author_id = u.user_id;
+            `;
     } else {
         switch(req.session.publicationType)
         {
             case "everyone":    
                 query = `
-                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
-                SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
+                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id
+                `;
                 break;
             case "subscribed":   
                 query = `
-                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
-                SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
+                SELECT * FROM publication as pub, user_subscription as sub, user as u 
+                WHERE sub.user_id = `+ req.session.user_id +`
+                AND sub.subscribe_to = pub.author_id
+                AND pub.author_id = u.user_id
+                `;
                 break;
             case "mentionned":    
                 query = `
-                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
-                SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
+                SELECT * FROM publication as pub, publication_mention as mention, user as u 
+                WHERE mention.user_mentionned = `+ req.session.user_id +`
+                AND pub.publication_id = mention.publication_id
+                AND pub.author_id = u.user_id
+                `;
                 break;
             case "liked":  
                 query = `
-                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
-                SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
+                SELECT * FROM publication as pub, publication_reaction as react, user as u 
+                WHERE react.liked = true 
+                AND react.reactor_id = `+ req.session.user_id +`
+                AND pub.publication_id = react.publication_id
+                AND pub.author_id = u.user_id
+                `;
                 break;
             default:
                 query = `
-                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id;
-                SELECT publication_id, count(*) as nbr_like FROM publication_reaction WHERE liked = true GROUP BY publication_id`;
+                SELECT * FROM publication as p, user as u WHERE p.author_id = u.user_id
+                `;
                 break;
-
         }
     }
     pool.query(query, (err,rows,fields) => {
@@ -143,7 +152,6 @@ app.post("/home/publish/", (req,res) => {
         var query = "INSERT INTO publication(author_id,date,content) VALUES(?,NOW(),?)";
         pool.query(query, [req.session.user_id, req.body.content], (err, rows, fields) =>{
             if(err) throw err;
-            console.log("ok");
         });
     }
 });
