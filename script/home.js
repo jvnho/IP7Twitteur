@@ -17,7 +17,7 @@ Vue.component('publication', {
     template:
     `
     <div class="publication media border p-3 mt-5">
-        <img v-bind:src="'../img/'+publication.picture" alt="" class="mr-3 mt-3 rounded-circle" style="width:60px;">
+        <img v-bind:src="'../img/'+publication.picture" alt="" class="mr-3 mt-3 rounded-circle" style="width:125px;">
         <div class="media-body">
             <h4>{{publication.username}} <small><i>{{publication.date}}</i></small></h4>
             <p>{{publication.content}}</p>
