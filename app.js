@@ -105,12 +105,12 @@ app.get("/home", (req, res) => {
         {
             case "everyone":    
                 query = `
-                SELECT pub.*, u.*, reaction.liked FROM publication as pub, user as u, publication_reaction as reaction
+                SELECT pub.*, u.*,
+                (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
+                (COALESCE(SELECT * FROM publication_reaction AS reaction WHERE pub.publication_id = reaction.publication_id, false) AS liked
+                FROM publication AS pub, user AS u
                 WHERE pub.at_everyone = false 
                 AND pub.author_id = u.user_id
-                AND reaction.publication_id = pub.publication_id
-                AND reaction.reactor_id = ` + req.session.user_id +`
-                AND reaction.liked = true
                 `;
                 break;
             case "subscribed":   
@@ -121,7 +121,6 @@ app.get("/home", (req, res) => {
                 AND pub.author_id = u.user_id
                 AND reaction.publication_id = pub.publication_id
                 AND reaction.reactor_id = ` + req.session.user_id +`
-                AND reaction.liked = true
                 `;
                 break;
             case "mentionned":    
@@ -132,7 +131,6 @@ app.get("/home", (req, res) => {
                 AND pub.author_id = u.user_id
                 AND reaction.publication_id = pub.publication_id
                 AND reaction.reactor_id = ` + req.session.user_id +`
-                AND reaction.liked = true
                 `;
                 break;
             case "liked":  
@@ -147,7 +145,6 @@ app.get("/home", (req, res) => {
         }
     }
     pool.query(query, (err,rows,fields) => {
-        console.log(rows);
         res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false)});
     });
 });
