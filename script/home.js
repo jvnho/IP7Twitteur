@@ -22,8 +22,11 @@ Vue.component('publication', {
             <h4>{{publication.username}} <small><i>{{publication.date}}</i></small></h4>
             <p>{{publication.content}}</p>
             <div v-if="this.connected"class="d-flex align-items-end">
-                <button v-if="publication.liked" type="button" class="btn btn-primary like-publication">Ne plus aimer</button>
-                <button v-else type="button" class="btn btn-primary unlike-publication">Aimer</button>
+                <button v-if="publication.liked" type="button" class="btn btn-primary like-publication">Ne plus aimer <small>({{publication.nbr_like}})</small></button>
+                <button v-else type="button" class="btn btn-primary unlike-publication">Aimer <small>({{publication.nbr_like}})</small></button>
+
+                <button v-if="publication.subscribed" type="button" class="btn btn-primary like-publication">S'abonner</button>
+                <button v-else type="button" class="btn btn-primary unlike-publication">Ne plus être abonné</button>
             </div>
         </div>
     </div>
