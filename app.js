@@ -105,7 +105,9 @@ app.get("/home", (req, res) => {
         {
             case "everyone":    
                 query = `
-                SELECT pub.*, u.* FROM publication as pub, user as u WHERE pub.at_everyone = false AND p.author_id = u.user_id
+                SELECT pub.*, u.* FROM publication as pub, user as u 
+                WHERE pub.at_everyone = false 
+                AND pub.author_id = u.user_id
                 `;
                 break;
             case "subscribed":   
@@ -131,11 +133,6 @@ app.get("/home", (req, res) => {
                 AND react.reactor_id = `+ req.session.user_id +`
                 AND pub.publication_id = react.publication_id
                 AND pub.author_id = u.user_id
-                `;
-                break;
-            default:
-                query = `
-                SELECT * FROM publication as p, user as u WHERE p.author_id = u.user_id
                 `;
                 break;
         }
