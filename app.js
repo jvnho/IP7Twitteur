@@ -107,7 +107,12 @@ app.get("/home", (req, res) => {
                 query = `
                 SELECT pub.*, u.*,
                 (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
-                (COALESCE(SELECT * FROM publication_reaction AS reaction WHERE pub.publication_id = reaction.publication_id, false) AS liked
+                CASE 
+                    WHEN EXISTS 
+                        (SELECT * FROM publication_reaction AS r 
+                            WHERE pub.publication_id = r.publication_id) 
+                            THEN true ELSE false END 
+                            AS liked
                 FROM publication AS pub, user AS u
                 WHERE pub.at_everyone = false 
                 AND pub.author_id = u.user_id
