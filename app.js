@@ -120,27 +120,41 @@ app.get("/home", (req, res) => {
                 break;
             case "subscribed":   
                 query = `
-                SELECT pub.*, u.*, reaction.liked FROM publication as pub, user_subscription as sub, user as u, publication_reaction as reaction
+                SELECT pub.*, u.*,
+                (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
+                CASE 
+                WHEN EXISTS 
+                    (SELECT * FROM publication_reaction AS r 
+                        WHERE pub.publication_id = r.publication_id) 
+                        THEN true ELSE false END 
+                        AS liked,
+                true as subscribed
+                FROM publication AS pub, user_subscription AS sub, user AS u
                 WHERE sub.user_id = `+ req.session.user_id +`
                 AND sub.subscribe_to = pub.author_id
                 AND pub.author_id = u.user_id
-                AND reaction.publication_id = pub.publication_id
-                AND reaction.reactor_id = ` + req.session.user_id +`
                 `;
                 break;
             case "mentionned":    
                 query = `
-                SELECT pub.*, u.*, reaction.liked FROM publication as pub, publication_mention as mention, user as u, publication_reaction as reaction
+                SELECT pub.*, u.*, 
+                (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
+                CASE 
+                WHEN EXISTS 
+                    (SELECT * FROM publication_reaction AS r 
+                        WHERE pub.publication_id = r.publication_id) 
+                        THEN true ELSE false END 
+                        AS liked
+                FROM publication as pub, publication_mention AS mention, user AS u
                 WHERE mention.user_mentionned = `+ req.session.user_id +`
                 AND pub.publication_id = mention.publication_id
                 AND pub.author_id = u.user_id
-                AND reaction.publication_id = pub.publication_id
-                AND reaction.reactor_id = ` + req.session.user_id +`
                 `;
                 break;
             case "liked":  
                 query = `
-                SELECT * FROM publication as pub, publication_reaction as react, user as u 
+                SELECT pub.*,u.*, true AS liked  
+                FROM publication as pub, publication_reaction as react, user as u
                 WHERE react.liked = true 
                 AND react.reactor_id = `+ req.session.user_id +`
                 AND pub.publication_id = react.publication_id
