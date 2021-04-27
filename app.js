@@ -105,25 +105,34 @@ app.get("/home", (req, res) => {
         {
             case "everyone":    
                 query = `
-                SELECT pub.*, u.* FROM publication as pub, user as u 
+                SELECT pub.*, u.*, reaction.liked FROM publication as pub, user as u, publication_reaction as reaction
                 WHERE pub.at_everyone = false 
                 AND pub.author_id = u.user_id
+                AND reaction.publication_id = pub.publication_id
+                AND reaction.reactor_id = ` + req.session.user_id +`
+                AND reaction.liked = true
                 `;
                 break;
             case "subscribed":   
                 query = `
-                SELECT * FROM publication as pub, user_subscription as sub, user as u 
+                SELECT pub.*, u.*, reaction.liked FROM publication as pub, user_subscription as sub, user as u, publication_reaction as reaction
                 WHERE sub.user_id = `+ req.session.user_id +`
                 AND sub.subscribe_to = pub.author_id
                 AND pub.author_id = u.user_id
+                AND reaction.publication_id = pub.publication_id
+                AND reaction.reactor_id = ` + req.session.user_id +`
+                AND reaction.liked = true
                 `;
                 break;
             case "mentionned":    
                 query = `
-                SELECT * FROM publication as pub, publication_mention as mention, user as u 
+                SELECT pub.*, u.*, reaction.liked FROM publication as pub, publication_mention as mention, user as u, publication_reaction as reaction
                 WHERE mention.user_mentionned = `+ req.session.user_id +`
                 AND pub.publication_id = mention.publication_id
                 AND pub.author_id = u.user_id
+                AND reaction.publication_id = pub.publication_id
+                AND reaction.reactor_id = ` + req.session.user_id +`
+                AND reaction.liked = true
                 `;
                 break;
             case "liked":  
@@ -138,6 +147,7 @@ app.get("/home", (req, res) => {
         }
     }
     pool.query(query, (err,rows,fields) => {
+        console.log(rows);
         res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false)});
     });
 });
