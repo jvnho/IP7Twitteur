@@ -98,14 +98,14 @@ app.get("/home", (req, res) => {
     var query = '';
     if(req.session.initialized !== true){
         query = `
-            SELECT * FROM publication as p, user as u WHERE p.author_id = u.user_id;
+            SELECT pub.*, u.* FROM publication as pub, user as u WHERE pub.author_id = u.user_id;
             `;
     } else {
         switch(req.session.publicationType)
         {
             case "everyone":    
                 query = `
-                SELECT * FROM publication as p, user as u WHERE p.at_everyone = false AND p.author_id = u.user_id
+                SELECT pub.*, u.* FROM publication as pub, user as u WHERE pub.at_everyone = false AND p.author_id = u.user_id
                 `;
                 break;
             case "subscribed":   

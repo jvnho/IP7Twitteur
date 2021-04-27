@@ -48,7 +48,13 @@
         </div>
 
         <div id="publications-container" class="container">
-            <publication v-for="publication in publications" v-bind:key="publication.publication_id" v-bind:publication="publication"></publication>
+            <publication 
+                v-for="publication in publications" 
+                v-bind:key="publication.publication_id" 
+                v-bind:publication="publication"
+                v-bind:remove_element="removeElement"
+                >
+            </publication>
         </div>
     </div>
 

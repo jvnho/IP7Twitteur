@@ -13,7 +13,7 @@ new Vue({
 })
 
 Vue.component('publication', {
-    props: ['publication'],
+    props: ['publication', 'remove_element'],
     template:
     `
     <div class="publication media border p-3 mt-5">
@@ -23,13 +23,24 @@ Vue.component('publication', {
             <p>{{publication.content}}</p>
         </div>
     </div>
-    ` 
+    `,
+    created:
+        function(){
+            this.remove_element();
+        }
 })
 
 new Vue({
     el: '#publications-container',
     data: {
         publications : publications,
+        isConnected : isConnected
+    },
+    methods: {
+        removeElement : function(){
+            console.log(this.publications.shift());
+            console.log(this.publications)
+        }
     }
 })
 
