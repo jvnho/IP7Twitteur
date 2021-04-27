@@ -52,6 +52,7 @@
                 v-for="publication in publications" 
                 v-bind:key="publication.publication_id" 
                 v-bind:publication="publication"
+                v-bind:connected="isConnected"
                 >
             </publication>
         </div>
