@@ -23,11 +23,11 @@ Vue.component('publication', {
                 <h4>{{publication.username}} <small><i>{{publication.date}}</i></small></h4>
                 <p>{{publication.content}}</p>
                 <div v-if="this.connected" class="d-flex align-items-end">
-                    <button v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Publication aimée (<span>{{publication.nbr_like}}</span>)</button>
-                    <button v-else type="button" class="btn btn-primary like-publication">Aimer la publication (<span>{{publication.nbr_like}}</span>)</button>
+                    <button :data-publication="publication.publication_id" v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Publication aimée (<span>{{publication.nbr_like}}</span>)</button>
+                    <button :data-publication="publication.publication_id" v-else type="button" class="btn btn-primary like-publication">Aimer la publication (<span>{{publication.nbr_like}}</span>)</button>
 
-                    <button v-if="publication.subscribed == 0 && this.user_id !== publication.author_id" type="button" class="btn btn-primary sub">S'abonner</button>
-                    <button v-else-if="this.user_id !== publication.author_id" type="button" class="btn btn-primary unsub">Abonné(e)</button>
+                    <button :data-author_id="publication.author_id" v-if="publication.subscribed == 0 && this.user_id !== publication.author_id" type="button" class="btn btn-primary sub">S'abonner</button>
+                    <button :data-author_id="publication.author_id" v-else-if="this.user_id !== publication.author_id" type="button" class="btn btn-primary unsub">Abonné(e)</button>
                 </div>
             </div>
         </div>
