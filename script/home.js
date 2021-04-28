@@ -13,7 +13,7 @@ new Vue({
 })
 
 Vue.component('publication', {
-    props: ['publication', 'connected'],
+    props: ['publication', 'connected', 'user_id'],
     template:
     `
     <div class="publication media border p-4 mt-5">
@@ -25,19 +25,20 @@ Vue.component('publication', {
                 <button v-if="publication.liked" type="button" class="btn btn-primary like-publication">Ne plus aimer <small>({{publication.nbr_like}})</small></button>
                 <button v-else type="button" class="btn btn-primary unlike-publication">Aimer <small>({{publication.nbr_like}})</small></button>
 
-                <button v-if="publication.subscribed" type="button" class="btn btn-primary like-publication">S'abonner</button>
-                <button v-else type="button" class="btn btn-primary unlike-publication">Ne plus être abonné</button>
+                <button v-if="publication.subscribed == 0 && this.user_id !== publication.author_id" type="button" class="btn btn-primary like-publication">S'abonner</button>
+                <button v-else-if="this.user_id !== publication.author_id" type="button" class="btn btn-primary unlike-publication">Ne plus être abonné</button>
             </div>
         </div>
     </div>
     `
 })
 
-new Vue({
+var app = new Vue({
     el: '#publications-container',
     data: {
         publications : publications,
-        isConnected : isConnected
+        isConnected : isConnected,
+        user_id: user_id
     }
 })
 

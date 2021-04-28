@@ -4,6 +4,8 @@
 <head>
     <script>
         var isConnected = <%= connectionStatus %>;
+        var user_id = <%= userID %>;
+        console.log(user_id);
         var publications = <%- JSON.stringify(publications) %>;
     </script>
     <title>Accueil</title>
@@ -53,6 +55,7 @@
                 v-bind:key="publication.publication_id" 
                 v-bind:publication="publication"
                 v-bind:connected="isConnected"
+                v-bind:user_id="user_id"
                 >
             </publication>
         </div>
