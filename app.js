@@ -98,7 +98,7 @@ app.get("/home", (req, res) => {
     var query = '';
     if(req.session.initialized !== true){
         query = `
-            SELECT pub.*, u.* FROM publication as pub, user as u WHERE pub.author_id = u.user_id;
+            SELECT pub.*, u.* FROM publication as pub, user as u WHERE pub.author_id = u.user_id ORDER BY pub.publication_id DESC;
             `;
     } else {
         switch(req.session.publicationType)
@@ -122,6 +122,7 @@ app.get("/home", (req, res) => {
                 FROM publication AS pub, user AS u
                 WHERE pub.at_everyone = false 
                 AND pub.author_id = u.user_id
+                ORDER BY pub.publication_id DESC
                 `;
                 break;
             case "subscribed":   
@@ -139,6 +140,7 @@ app.get("/home", (req, res) => {
                 WHERE sub.user_id = `+ req.session.user_id +`
                 AND sub.subscribe_to = pub.author_id
                 AND pub.author_id = u.user_id
+                ORDER BY pub.publication_id DESC
                 `;
                 break;
             case "mentionned":    
@@ -161,6 +163,7 @@ app.get("/home", (req, res) => {
                 WHERE mention.user_mentionned = `+ req.session.user_id +`
                 AND pub.publication_id = mention.publication_id
                 AND pub.author_id = u.user_id
+                ORDER BY pub.publication_id DESC
                 `;
                 break;
             case "liked":  
@@ -176,6 +179,7 @@ app.get("/home", (req, res) => {
                 AND react.reactor_id = `+ req.session.user_id +`
                 AND pub.publication_id = react.publication_id
                 AND pub.author_id = u.user_id
+                ORDER BY pub.publication_id DESC
                 `;
                 break;
         }
