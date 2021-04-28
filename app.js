@@ -181,7 +181,7 @@ app.get("/home", (req, res) => {
         }
     }
     pool.query(query, (err,rows,fields) => {
-        res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false)});
+        res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false), userID : (typeof req.session.user_id !== "undefined" ? req.session.user_id : -1)});
     });
 });
 
