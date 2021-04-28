@@ -22,12 +22,12 @@ Vue.component('publication', {
             <div class="media-body">
                 <h4>{{publication.username}} <small><i>{{publication.date}}</i></small></h4>
                 <p>{{publication.content}}</p>
-                <div v-if="this.connected"class="d-flex align-items-end">
-                    <button v-if="publication.liked" type="button" class="btn btn-primary like-publication">Ne plus aimer <small>({{publication.nbr_like}})</small></button>
-                    <button v-else type="button" class="btn btn-primary unlike-publication">Aimer <small>({{publication.nbr_like}})</small></button>
+                <div v-if="this.connected" class="d-flex align-items-end">
+                    <button v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Publication aimée (<span>{{publication.nbr_like}}</span>)</button>
+                    <button v-else type="button" class="btn btn-primary like-publication">Aimer la publication (<span>{{publication.nbr_like}}</span>)</button>
 
-                    <button v-if="publication.subscribed == 0 && this.user_id !== publication.author_id" type="button" class="btn btn-primary like-publication">S'abonner</button>
-                    <button v-else-if="this.user_id !== publication.author_id" type="button" class="btn btn-primary unlike-publication">Ne plus être abonné</button>
+                    <button v-if="publication.subscribed == 0 && this.user_id !== publication.author_id" type="button" class="btn btn-primary sub">S'abonner</button>
+                    <button v-else-if="this.user_id !== publication.author_id" type="button" class="btn btn-primary unsub">Abonné(e)</button>
                 </div>
             </div>
         </div>
@@ -46,6 +46,7 @@ var publications = new Vue({
 
 $(document).ready(function(){
     publicationFormHandler();
+    buttonHoverHandler();
 });
 
 function publicationFormHandler(){
@@ -63,5 +64,36 @@ function publicationFormHandler(){
                 data: { content: $('#publication-text').val()},
             }).done();
         }
+    })
+}
+
+function buttonHoverHandler(){
+    var old_html = "";
+    $(".unlike-publication, .unsub").mouseenter(function()
+    {
+        old_html = $(this).html();
+        $(this).removeClass("btn-primary");
+        $(this).addClass("btn-danger");
+        if($(this).hasClass("unsub"))
+            $(this).html("Se désabonner");
+        else if($(this).hasClass("unlike-publication"))
+            $(this).html("Ne plus aimer la publication");  
+    })
+
+    $(".unsub, .unlike-publication").mouseleave(function(){
+        $(this).addClass("btn-primary");
+        $(this).removeClass("btn-danger");
+        $(this).html(old_html);
+    })
+
+    $(".like-publication, .sub").mouseenter(function()
+    {
+        $(this).removeClass("btn-primary");
+        $(this).addClass("btn-success");
+    })
+
+    $(".sub, .like-publication").mouseleave(function(){
+        $(this).addClass("btn-primary");
+        $(this).removeClass("btn-success");
     })
 }
