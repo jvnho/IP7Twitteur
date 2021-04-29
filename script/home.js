@@ -102,59 +102,40 @@ function buttonHoverHandler(){
 function buttonClickHandler(){
     $(".unlike-publication").click( function() 
     {
-        var publication_id = $(this).data('publication');
-        var number_likes = $(this).children(".number-likes").html();
-        console.log(publication_id);
-        /*
-        $.post('/home/unlikepublication/', {publication_id : publication_id}, function() 
-        {
-            $(this).removeClass('unlike-publication');
-            $(this).addClass('like-publication');
-            $(this).html('Aimer la publication (<span class="number-likes">' + number_likes-1 + '</span>)');
-        });
-        */
+        var buttonClicked = $(this);
+        var publication_id = buttonClicked.data('publication');
+        var number_likes = buttonClicked.children(".number-likes").html();
+        $.post('/home/unlikepublication/', {publication_id : publication_id});
+        buttonClicked.removeClass('unlike-publication').addClass('like-publication');
+        buttonClicked.html('Aimer la publication (<span class="number-likes">' + number_likes-1 + '</span>)');
     });
 
-    $(".like-publication").click( function()
+    $(".like-publication").click( function(e)
     {
-        var publication_id = $(this).data('publication');
-        var number_likes = $(this).children(".number-likes").html();
-        console.log(publication_id);
-        /*
-        $.post('/home/likepublication/', {publication_id : publication_id}, function() 
-        {
-            $(this).removeClass('like-publication');
-            $(this).addClass('unlike-publication');
-            $(this).html('Publication aimée (<span class="number-likes">'+ number_likes+1 + '</span>)');
-        });
-        */
+        var buttonClicked = $(this);
+        var publication_id = buttonClicked.data('publication');
+        var number_likes = buttonClicked.children(".number-likes").html();
+        $.post('/home/likepublication/', {publication_id : publication_id});
+        buttonClicked.removeClass('like-publication').addClass('unlike-publication');
+        buttonClicked.html('Publication aimée (<span class="number-likes">'+ number_likes+1 + '</span>)');   
     });
 
     $(".sub").click( function()
     {
-        var author_id = $(this).data('author_id');
-        console.log(author_id);
-        /*
-        $.post('/home/subscribe/', {subscribe_to_id : author_id} , function() 
-        {
-            $(this).removeClass('sub');
-            $(this).addClass('unsub');
-            $(this).html("Abonné(e)");
-        });
-        */
+        var buttonClicked = $(this);
+        var author_id = buttonClicked.data('author_id');
+        $.post('/home/subscribe/', {subscribe_to_id : author_id});
+        buttonClicked.removeClass('sub').addClass('unsub');
+        buttonClicked.html("Abonné(e)");
     });
 
     $(".unsub").click( function()
     {
-        var author_id = $(this).data('author_id');
-        console.log(author_id);
-        /*
-        $.post('/home/unsubscribe/', {subscribe_to_id : author_id}, function() 
-        {
-            $(this).removeClass('unsub');
-            $(this).addClass('sub');
-            $(this).html("S'abonner");
-        });
-        */
+        var buttonClicked = $(this);
+        var author_id = buttonClicked.data('author_id');
+        $.post('/home/unsubscribe/', {subscribe_to_id : author_id});
+        buttonClicked.removeClass('unsub');
+        buttonClicked.addClass('sub');
+        buttonClicked.html("S'abonner");
     });
 }
