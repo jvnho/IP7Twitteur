@@ -200,6 +200,38 @@ app.post("/home/publish/", (req,res) => {
     }
 });
 
+app.post("/home/likepublication/", (req,res) =>{
+    var publication_id = req.body.publication_id;
+    pool.query("INSERT INTO publication_reaction VALUES (?,?,true)", [publication_id, req.session.user_id], (err,rows,fields) =>{
+        if(err) throw err;
+        res.sendStatus(200);
+    });
+});
+
+app.post("/home/unlikepublication/", (req,res) =>{
+    var publication_id = req.body.publication_id;
+    pool.query("DELETE FROM publication_reaction WHERE publication_id = ? AND reactor_id = ?", [publication_id, req.session.user_id], (err,rows,fields) =>{
+        if(err) throw err;
+        res.sendStatus(200);
+    });
+});
+
+app.post("/home/subscribe/", (req,res) =>{
+    var subscribe_to_id = req.body.subscribe_to_id;
+    pool.query("INSERT INTO user_subscription VALUES (?,?)", [req.session.user_id, subscribe_to_id], (err,rows,fields) =>{
+        if(err) throw err;
+        res.sendStatus(200);
+    });
+});
+
+app.post("/home/unsubscribe/", (req,res) =>{
+    var subscribe_to_id = req.body.subscribe_to_id;
+    pool.query("DELETE FROM user_subscription WHERE user_id = ? AND subscribe_to = ?", [req.session.user_id, subscribe_to_id], (err,rows,fields) =>{
+        if(err) throw err;
+        res.sendStatus(200);
+    });
+});
+
 app.get("/home/*", (req, res) => {
     res.redirect("/home/");
 });

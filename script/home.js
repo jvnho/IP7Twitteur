@@ -23,11 +23,11 @@ Vue.component('publication', {
                 <h4>{{publication.username}} <small><i>{{publication.date}}</i></small></h4>
                 <p>{{publication.content}}</p>
                 <div v-if="this.connected" class="d-flex align-items-end">
-                    <button :data-publication="publication.publication_id" v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Publication aimée (<span>{{publication.nbr_like}}</span>)</button>
-                    <button :data-publication="publication.publication_id" v-else type="button" class="btn btn-primary like-publication">Aimer la publication (<span>{{publication.nbr_like}}</span>)</button>
-
-                    <button :data-author_id="publication.author_id" v-if="publication.subscribed == 0 && this.user_id !== publication.author_id" type="button" class="btn btn-primary sub">S'abonner</button>
-                    <button :data-author_id="publication.author_id" v-else-if="this.user_id !== publication.author_id" type="button" class="btn btn-primary unsub">Abonné(e)</button>
+                    <button :data-publication="publication.publication_id" v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Publication aimée (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
+                    <button :data-publication="publication.publication_id" v-else type="button" class="btn btn-primary like-publication">Aimer la publication (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
+                    
+                    <button :data-author-id="publication.author_id" v-if="publication.subscribed == 0 && this.user_id !== publication.author_id" type="button" class="btn btn-primary sub">S'abonner</button>
+                    <button :data-author-id="publication.author_id" v-else-if="this.user_id !== publication.author_id" type="button" class="btn btn-primary unsub">Abonné(e)</button>
                 </div>
             </div>
         </div>
@@ -47,6 +47,7 @@ var publications = new Vue({
 $(document).ready(function(){
     publicationFormHandler();
     buttonHoverHandler();
+    buttonClickHandler()
 });
 
 function publicationFormHandler(){
@@ -96,4 +97,54 @@ function buttonHoverHandler(){
         $(this).addClass("btn-primary");
         $(this).removeClass("btn-success");
     })
+}
+
+function buttonClickHandler(){
+    $(".unlike-publication").click(() =>
+    {
+        console.log("unlke pub");
+        var publication_id = $(this).data('publication');
+        var number_likes = $(this).children(".number-likes").html();
+        $.post('/home/unlikepublication/', {publication_id : publication_id}, () => 
+        {
+            $(this).removeClass('unlike-publication');
+            $(this).addClass('like-publication');
+            $(this).html('Aimer la publication (<span class="number-likes">' + number_likes-1 + '</span>)');
+        });
+    });
+
+    $(".like-publication").click(() =>
+    {
+        var publication_id = $(this).data('publication');
+        console.log("like pub id " + publication_id);
+        var number_likes = $(this).children(".number-likes").html();
+        $.post('/home/likepublication/', {publication_id : publication_id}, () => 
+        {
+            $(this).removeClass('like-publication');
+            $(this).addClass('unlike-publication');
+            $(this).html('Publication aimée (<span class="number-likes">'+ number_likes+1 + '</span>)');
+        });
+    });
+
+    $(".sub").click(() =>
+    {
+        console.log("sub");
+        var author_id = $(this).data('author-id');
+        $.post('/home/subscribe/', {subscribe_to_id : author_id} , () => {
+            $(this).removeClass('sub');
+            $(this).addClass('unsub');
+            $(this).html("Abonné(e)");
+        });
+    });
+
+    $(".unsub").click(() =>
+    {
+        console.log("unsub");
+        var author_id = $(this).data('author-id');
+        $.post('/home/unsubscribe/', {subscribe_to_id : author_id}, () => {
+            $(this).removeClass('unsub');
+            $(this).addClass('sub');
+            $(this).html("S'abonner");
+        });
+    });
 }
