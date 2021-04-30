@@ -69,55 +69,53 @@ function publicationFormHandler(){
 }
 
 function buttonHoverHandler(){
-    var old_html = "";
+    var textSaved = "";
     $(".unlike-publication, .unsub").mouseenter(function()
     {
-        old_html = $(this).html();
-        $(this).removeClass("btn-primary");
-        $(this).addClass("btn-danger");
+        textSaved = $(this).html();
+        $(this).removeClass("btn-primary").addClass("btn-danger");
         if($(this).hasClass("unsub"))
             $(this).html("Se désabonner");
         else if($(this).hasClass("unlike-publication"))
             $(this).html("Ne plus aimer la publication");  
     })
 
-    $(".unsub, .unlike-publication").mouseleave(function(){
-        $(this).addClass("btn-primary");
-        $(this).removeClass("btn-danger");
-        $(this).html(old_html);
-    })
-
     $(".like-publication, .sub").mouseenter(function()
     {
-        $(this).removeClass("btn-primary");
-        $(this).addClass("btn-success");
+        textSaved = $(this).html();
+        $(this).removeClass("btn-primary").addClass("btn-success");
+    })
+
+    $(".unsub, .unlike-publication").mouseleave(function(){
+        $(this).addClass("btn-primary").removeClass("btn-danger").html(textSaved);
     })
 
     $(".sub, .like-publication").mouseleave(function(){
-        $(this).addClass("btn-primary");
-        $(this).removeClass("btn-success");
+        $(this).addClass("btn-primary").removeClass("btn-success").html(textSaved);
     })
 }
+
 
 function buttonClickHandler(){
     $(".unlike-publication").click( function() 
     {
         var buttonClicked = $(this);
         var publication_id = buttonClicked.data('publication');
-        var number_likes = buttonClicked.children(".number-likes").html();
+        var number_likes = Number.parseInt(buttonClicked.children(".number-likes").html());
         $.post('/home/unlikepublication/', {publication_id : publication_id});
         buttonClicked.removeClass('unlike-publication').addClass('like-publication');
-        buttonClicked.html('Aimer la publication (<span class="number-likes">' + number_likes-1 + '</span>)');
+        buttonClicked.html('Aimer la publication (<span class="number-likes">' + (number_likes-1) + '</span>)');
     });
 
-    $(".like-publication").click( function(e)
+    $(".like-publication").click( function()
     {
         var buttonClicked = $(this);
         var publication_id = buttonClicked.data('publication');
-        var number_likes = buttonClicked.children(".number-likes").html();
+        var number_likes = Number.parseInt(buttonClicked.children(".number-likes").html());
         $.post('/home/likepublication/', {publication_id : publication_id});
-        buttonClicked.removeClass('like-publication').addClass('unlike-publication');
-        buttonClicked.html('Publication aimée (<span class="number-likes">'+ number_likes+1 + '</span>)');   
+        buttonClicked.html('Publication aimée (<span class="number-likes">'+ (number_likes+1) + '</span>)');   
+        buttonClicked.addClass('unlike-publication');
+        buttonClicked.removeClass('like-publication');
     });
 
     $(".sub").click( function()
@@ -138,4 +136,11 @@ function buttonClickHandler(){
         buttonClicked.addClass('sub');
         buttonClicked.html("S'abonner");
     });
+}
+
+setInterval(updatePublications, 5000);
+
+
+function updatePublications(){
+
 }
