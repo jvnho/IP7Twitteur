@@ -94,7 +94,13 @@ app.get("/login/*", (req, res) => {
 });
 
 app.get("/home", (req, res) => {
-    var publications = [];
+    getPublications(req, function(err, rows){
+        if(err) throw err;
+        res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false), userID : (typeof req.session.user_id !== "undefined" ? req.session.user_id : -1)});
+    });   
+});
+
+function getPublications(req, callback){
     var query = '';
     if(req.session.initialized !== true){
         query = `
@@ -185,9 +191,9 @@ app.get("/home", (req, res) => {
         }
     }
     pool.query(query, (err,rows,fields) => {
-        res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false), userID : (typeof req.session.user_id !== "undefined" ? req.session.user_id : -1)});
+        callback(err,rows);
     });
-});
+}
 
 app.post("/home/publish/", (req,res) => {
     if(!req.session.initialized){
