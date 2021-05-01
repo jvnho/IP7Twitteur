@@ -23,7 +23,6 @@ const pool = mysql.createPool(
     user: 'root',
     password: 'Nicola$32',
     database: 'projetsangsiri',
-    multipleStatements: true,
     connectionLimit : 10
 });
 
@@ -94,90 +93,27 @@ app.get("/login/*", (req, res) => {
 });
 
 app.get("/home", (req, res) => {
-    getPublications(req, function(err, rows){
+    getPublications(0, req, function(err, rows){
         if(err) throw err;
         res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false), userID : (typeof req.session.user_id !== "undefined" ? req.session.user_id : -1)});
     });   
 });
 
-function getPublications(req, callback){
-    var query = '';
-    if(req.session.initialized !== true)
-    {
-        query = `
-            SELECT pub.*, u.* FROM publication as pub, user as u WHERE pub.author_id = u.user_id ORDER BY pub.publication_id DESC;
-            `;
-    } else {
-        switch(req.session.publicationType)
-        {
-            case "everyone":    
-                query = `SELECT pub.*, u.*,
-                (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
-                CASE WHEN EXISTS (SELECT * FROM publication_reaction AS r 
-                    WHERE pub.publication_id = r.publication_id 
-                    AND r.reactor_id = `+ req.session.user_id +`) 
-                    THEN true ELSE false END AS liked,
-                CASE WHEN EXISTS (SELECT * FROM user_subscription AS sub
-                    WHERE sub.user_id = `+ req.session.user_id +` 
-                    AND sub.subscribe_to = pub.author_id) 
-                    THEN true ELSE false END AS subscribed
-                FROM publication AS pub, user AS u
-                WHERE pub.at_everyone = false 
-                AND pub.author_id = u.user_id
-                ORDER BY pub.publication_id DESC`;
-                break;
-            case "subscribed":   
-                query = `SELECT pub.*, u.*, true as subscribed,
-                (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
-                CASE WHEN EXISTS (SELECT * FROM publication_reaction AS r 
-                    WHERE pub.publication_id = r.publication_id 
-                    AND r.reactor_id = `+ req.session.user_id +`) 
-                    THEN true ELSE false END AS liked
-                FROM publication AS pub, user_subscription AS sub, user AS u
-                WHERE sub.user_id = `+ req.session.user_id +`
-                AND sub.subscribe_to = pub.author_id
-                AND pub.author_id = u.user_id
-                ORDER BY pub.publication_id DESC`;
-                break;
-            case "mentionned":    
-                query = `SELECT pub.*, u.*, 
-                (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
-                CASE WHEN EXISTS (SELECT * FROM publication_reaction AS r 
-                    WHERE pub.publication_id = r.publication_id 
-                    AND r.reactor_id = `+ req.session.user_id +`) 
-                    THEN true ELSE false END AS liked,
-                CASE WHEN EXISTS (SELECT * FROM user_subscription AS sub
-                    WHERE sub.user_id = `+ req.session.user_id +` 
-                    AND sub.subscribe_to = pub.author_id) 
-                    THEN true ELSE false END AS subscribed
-                FROM publication as pub, publication_mention AS mention, user AS u
-                WHERE mention.user_mentionned = `+ req.session.user_id +`
-                AND pub.publication_id = mention.publication_id
-                AND pub.author_id = u.user_id
-                ORDER BY pub.publication_id DESC`;
-                break;
-            case "liked":  
-                query = `SELECT pub.*,u.*, true AS liked,
-                CASE WHEN EXISTS (SELECT * FROM user_subscription AS sub
-                    WHERE sub.user_id = `+ req.session.user_id +` 
-                    AND sub.subscribe_to = pub.author_id) 
-                    THEN true ELSE false END AS subscribed
-                FROM publication as pub, publication_reaction as react, user as u
-                WHERE react.liked = true 
-                AND react.reactor_id = `+ req.session.user_id +`
-                AND pub.publication_id = react.publication_id
-                AND pub.author_id = u.user_id
-                ORDER BY pub.publication_id DESC`;
-                break;
-        }
-    }
+const myQuery = require('./script/query.js');
+
+function getPublications(index, req, callback){
+    
+    var query = myQuery.getQuery(req.session.publicationType, index, req.session.user_id);
     pool.query(query, (err,rows,fields) => {
         callback(err,rows);
     });
 }
 
 app.post("/home/update", (req,res) =>{
-    
+    getPublications(req, function(err, rows){
+        if(err) throw err;
+        res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false), userID : (typeof req.session.user_id !== "undefined" ? req.session.user_id : -1)});
+    });   
 });
 
 app.post("/home/publish/", (req,res) => {
