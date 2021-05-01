@@ -6,6 +6,7 @@
         var isConnected = <%= connectionStatus %>;
         var user_id = <%= userID %>;
         var publications = <%- JSON.stringify(publications) %>;
+        var publicationType = <%- JSON.stringify(publicationType) %>;
     </script>
     <title>Accueil</title>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
@@ -38,7 +39,7 @@
                 <button type="button" id="showAll" class="active btn btn-primary">Tout le monde</button>
                 <button type="button" id="showSubscriptions" class="btn btn-primary">Mes abonnements</button>
                 <button type="button" id="showMsgToMe" class="btn btn-primary">Mes mentions</button>
-                <button type="button" id="showMsgToMe" class="btn btn-primary">Publications aimées</button>  
+                <button type="button" id="showLiked" class="btn btn-primary">Publications aimées</button>  
             </div>
         </div>
 

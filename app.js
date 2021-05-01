@@ -95,7 +95,13 @@ app.get("/login/*", (req, res) => {
 app.get("/home", (req, res) => {
     getPublications(0, req, function(err, rows){
         if(err) throw err;
-        res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false), userID : (typeof req.session.user_id !== "undefined" ? req.session.user_id : -1)});
+        res.render("home.ejs",
+        {
+            publications : rows, 
+            connectionStatus : (req.session.initialized ? true : false), 
+            userID : (typeof req.session.user_id !== "undefined" ? req.session.user_id : -1),
+            publicationType : (typeof req.session.publicationType !== "undefined" ? req.session.publicationType : "")
+        });
     });   
 });
 
@@ -126,7 +132,20 @@ app.post("/home/publish/", (req,res) => {
     }
 });
 
-app.post("/home/likepublication/", (req,res) =>{
+app.post("/home/publicationtype", (req,res) => {
+    var type = req.body.type;
+    if(type === "showAll")
+        req.session.publicationType = "everyone"
+    else if (type === "showSubscriptions")
+        req.session.publicationType = "subscribed"
+    else if (type === "showMsgToMe")
+        req.session.publicationType = "mentionned"
+    else if (type === "showLiked")
+        req.session.publicationType = "liked"
+    res.sendStatus(200);
+});
+
+app.post("/home/likepublication/", (req,res) => {
     var publication_id = req.body.publication_id;
     pool.query("INSERT INTO publication_reaction VALUES (?,?,true)", [publication_id, req.session.user_id], (err,rows,fields) =>{
         if(err) throw err;

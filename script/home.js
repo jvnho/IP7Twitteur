@@ -48,9 +48,24 @@ var publications = new Vue({
 
 $(document).ready(function(){
     publicationFormHandler();
-    buttonHoverHandler();
-    buttonClickHandler()
+    buttonPublicationHoverHandler();
+    buttonPublicationClickHandler();
+    buttonChangePublicationType();
+    setInterval(updatePublications, 5000);
 });
+
+
+function updatePublications(){
+    $.post("/home/update", {publication_index : index}, (data) => 
+    {
+        //s'il y a de nouvelles publications alors on les fait passer à VueJS qui met à jour dynamiquement le contenu de la page
+        if(data.new_publications.length > 0)
+        {
+            index += data.new_publications.length;
+            publications.publicatoins.unshift(data.new_publications);
+        }
+    });
+}
 
 function publicationFormHandler(){
     $("#publish-message").click(function(event){
@@ -70,7 +85,7 @@ function publicationFormHandler(){
     })
 }
 
-function buttonHoverHandler(){
+function buttonPublicationHoverHandler(){
     var textSaved = "";
     $(".unlike-publication, .unsub").mouseenter(function()
     {
@@ -98,7 +113,7 @@ function buttonHoverHandler(){
 }
 
 
-function buttonClickHandler(){
+function buttonPublicationClickHandler(){
     $(".unlike-publication").click( function() 
     {
         var buttonClicked = $(this);
@@ -140,18 +155,14 @@ function buttonClickHandler(){
     });
 }
 
-setInterval(updatePublications, 5000);
-
-
-function updatePublications(){
-    console.log("updating...")
-    $.post("/home/update", {publication_index : index}, (data) => 
+function buttonChangePublicationType(){
+    $("#showAll, #showSubscriptions, #showMsgToMe, #showLiked").click(function()
     {
-        //s'il y a de nouvelles publications alors on les fait passer à VueJS qui met à jour dynamiquement le contenu de la page
-        if(data.new_publications.length > 0)
-        {
-            index += data.new_publications.length;
-            publications.publicatoins.unshift(data.new_publications);
-        }
-    });
+        var type = $(this).prop("id");
+        $.post("/home/publicationtype", {type : type}, (data) =>{
+            console.log(data);
+            location.reload();
+        });
+    })
 }
+
