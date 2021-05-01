@@ -1,3 +1,5 @@
+var index = publications.length;
+
 new Vue({
     data : {
         isConnected : isConnected
@@ -142,5 +144,14 @@ setInterval(updatePublications, 5000);
 
 
 function updatePublications(){
-
+    console.log("updating...")
+    $.post("/home/update", {publication_index : index}, (data) => 
+    {
+        //s'il y a de nouvelles publications alors on les fait passer à VueJS qui met à jour dynamiquement le contenu de la page
+        if(data.new_publications.length > 0)
+        {
+            index += data.new_publications.length;
+            publications.publicatoins.unshift(data.new_publications);
+        }
+    });
 }

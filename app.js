@@ -102,17 +102,16 @@ app.get("/home", (req, res) => {
 const myQuery = require('./script/query.js');
 
 function getPublications(index, req, callback){
-    
     var query = myQuery.getQuery(req.session.publicationType, index, req.session.user_id);
     pool.query(query, (err,rows,fields) => {
         callback(err,rows);
     });
 }
 
-app.post("/home/update", (req,res) =>{
-    getPublications(req, function(err, rows){
+app.post("/home/update", (req,res) => {
+    getPublications(req.body.publication_index, req, function(err, rows){
         if(err) throw err;
-        res.render("home.ejs", {publications : rows, connectionStatus : (req.session.initialized ? true : false), userID : (typeof req.session.user_id !== "undefined" ? req.session.user_id : -1)});
+        res.send( {new_publications : rows} );
     });   
 });
 
