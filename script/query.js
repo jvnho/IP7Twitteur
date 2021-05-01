@@ -1,12 +1,5 @@
 
 function getQuery(queryType, index, userID){
-    if (typeof queryType === "undefined" || typeof userID === "undefined") {
-        return `SELECT pub.*, u.* FROM publication as pub, user as u 
-        WHERE pub.author_id = u.user_id 
-        AND pub.publication_id > ` + index + `
-        ORDER BY pub.publication_id DESC;`;
-    }
-
     switch(queryType)
     {
 
@@ -70,6 +63,12 @@ function getQuery(queryType, index, userID){
             AND react.reactor_id = `+ userID +` AND pub.publication_id = react.publication_id
             AND pub.author_id = u.user_id AND pub.publication_id > ` + index + `
             ORDER BY pub.publication_id DESC`;
+
+        default:
+            return `SELECT pub.*, u.* FROM publication as pub, user as u 
+            WHERE pub.author_id = u.user_id 
+            AND pub.publication_id > ` + index + `
+            ORDER BY pub.publication_id DESC;`;
     }
 }
 
