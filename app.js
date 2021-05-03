@@ -80,7 +80,7 @@ app.post("/login/", (req, res) => {
             req.session.initialized = true;
             req.session.username = rows[0].username;
             req.session.user_id = parseInt(rows[0].user_id);
-            req.session.publicationType = "everyone"; //everyone || subscribed || mentionned || liked
+            req.session.publicationType = "everyone"; //everyone || subscribed || mentionned || liked || search
             res.sendStatus(200);
         } else {
             res.sendStatus(400);
@@ -142,6 +142,10 @@ app.post("/home/publicationtype", (req,res) => {
         req.session.publicationType = "mentionned"
     else if (type === "showLiked")
         req.session.publicationType = "liked"
+    else if (type === "searchMsg"){
+        req.session.publicationType = "search"
+        req.session.searchFor = req.body.searchFor;
+    }
     res.sendStatus(200);
 });
 

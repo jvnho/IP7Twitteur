@@ -1,5 +1,5 @@
 
-function getQuery(queryType, index, userID){
+function getQuery(queryType, index, userID, searchFor = ""){
     switch(queryType)
     {
 
@@ -64,6 +64,49 @@ function getQuery(queryType, index, userID){
             AND pub.author_id = u.user_id AND pub.publication_id > ` + index + `
             ORDER BY pub.publication_id DESC`;
 
+
+        case "search":
+            if(typeof userID !== "undefined") //utilisateur connecté faisant une recherche
+            {
+                return `SELECT pub.*, u.*,
+                (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
+                CASE WHEN EXISTS (SELECT * FROM publication_reaction AS r 
+                    WHERE pub.publication_id = r.publication_id 
+                    AND r.reactor_id = `+ userID +`) 
+                    THEN true ELSE false END AS liked,
+                CASE WHEN EXISTS (SELECT * FROM user_subscription AS sub
+                    WHERE sub.user_id = `+ userID +` 
+                    AND sub.subscribe_to = pub.author_id) 
+                    THEN true ELSE false END AS subscribed
+                FROM user AS u, publication AS pub
+                WHERE u.username = '`+ searchFor +`' AND pub.author_id = u.user_id
+                OR (pub.content LIKE CONCAT('%','`+ searchFor +`','%') AND pub.author_id = u.user_id)
+                OR (
+                    pub.publication_id IN (
+                        SELECT mention.publication_id FROM publication_mention AS mention, user AS mentionned 
+                        WHERE mentionned.username = '` + searchFor + `'))
+                OR (
+                    pub.publication_id IN (
+                        SELECT tag.publication_id FROM publication_hashtag AS tag 
+                        WHERE tag.hashtag = '`+ searchFor +`')
+                    )
+                ORDER BY pub.publication_id DESC;`
+            }
+            else {
+                `SELECT pub.*, u.* FROM user AS u, publication AS pub
+                WHERE u.username = '`+ searchFor +`' AND pub.author_id = u.user_id
+                OR (pub.content LIKE CONCAT('%','`+ searchFor +`','%') AND pub.author_id = u.user_id)
+                OR (
+                    pub.publication_id IN (
+                        SELECT mention.publication_id FROM publication_mention AS mention, user AS mentionned 
+                        WHERE mentionned.username = '` + searchFor + `'))
+                OR (
+                    pub.publication_id IN (
+                        SELECT tag.publication_id FROM publication_hashtag AS tag 
+                        WHERE tag.hashtag = '`+ searchFor +`')
+                    )
+                ORDER BY pub.publication_id DESC;`
+            }
         default:
             return `SELECT pub.*, u.* FROM publication as pub, user as u 
             WHERE pub.author_id = u.user_id 
@@ -72,4 +115,4 @@ function getQuery(queryType, index, userID){
     }
 }
 
-module.exports = { getQuery}
+module.exports = { getQuery }

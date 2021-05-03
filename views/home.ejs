@@ -30,8 +30,8 @@
     <div id="app" class=container-fluid>
 
         <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Something clever..">
-            <button class="btn btn-primary" type="button">Lancer la recherche</button>
+            <input type="text" class="form-control" id="searchPattern" placeholder="Chercher un utilisateur, un message, un hashtag...">
+            <button class="btn btn-primary" type="button" id="searchMsg">Lancer la recherche</button>
         </div>
 
         <div v-if="isConnected" id="user-menu-button" class="container-fluid">

@@ -47,15 +47,20 @@ var publications = new Vue({
 })
 
 $(document).ready(function(){
-    publicationFormHandler();
-    buttonPublicationHoverHandler();
-    buttonPublicationClickHandler();
-    buttonChangePublicationType();
+    publishMessage();
+    publicationButtonHover();
+    publicationButtonClick();
+    changePublicationType();
+    makeResearch();
     setInterval(updatePublications, 5000);
 });
 
 
 function updatePublications(){
+    if(publicationType === "search"){
+        //si l'utilisateur fait une recherche on ne modifiera pas le contenu de la page
+        return false;
+    }
     $.post("/home/update", {publication_index : index}, (data) => 
     {
         //s'il y a de nouvelles publications alors on les fait passer à VueJS qui met à jour dynamiquement le contenu de la page
@@ -67,7 +72,7 @@ function updatePublications(){
     });
 }
 
-function publicationFormHandler(){
+function publishMessage(){
     $("#publish-message").click(function(event){
         event.preventDefault();
         if($('#publication-text').val().length > 280){
@@ -85,7 +90,7 @@ function publicationFormHandler(){
     })
 }
 
-function buttonPublicationHoverHandler(){
+function publicationButtonHover(){
     var textSaved = "";
     $(".unlike-publication, .unsub").mouseenter(function()
     {
@@ -113,7 +118,7 @@ function buttonPublicationHoverHandler(){
 }
 
 
-function buttonPublicationClickHandler(){
+function publicationButtonClick(){
     $(".unlike-publication").click( function() 
     {
         var buttonClicked = $(this);
@@ -155,14 +160,26 @@ function buttonPublicationClickHandler(){
     });
 }
 
-function buttonChangePublicationType(){
+function changePublicationType(){
     $("#showAll, #showSubscriptions, #showMsgToMe, #showLiked").click(function()
     {
         var type = $(this).prop("id");
         $.post("/home/publicationtype", {type : type}, (data) =>{
-            console.log(data);
             location.reload();
         });
     })
 }
 
+function makeResearch(){
+    $("#searchMsg").click(function()
+    {
+        var type = $(this).prop("id");
+        var research = $("#searchPattern").val();
+        if(research !== "")
+        {
+            $.post("/home/publicationtype", {type : type, searchFor : research}, (data) =>{
+                location.reload();
+            });
+        }
+    });
+}
