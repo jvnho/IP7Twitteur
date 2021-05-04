@@ -46,7 +46,7 @@ function getQuery(queryType, index, userID, searchFor = ""){
                 AND sub.subscribe_to = pub.author_id) 
                 THEN true ELSE false END AS subscribed
             FROM publication as pub, publication_mention AS mention, user AS u
-            WHERE mention.user_mentionned = `+ userID +`
+            WHERE mention.user_mentionned = (SELECT u0.username FROM user AS u0 WHERE u0.user_id = `+ userID +`)
             AND pub.publication_id = mention.publication_id AND pub.author_id = u.user_id
             AND pub.publication_id > ` + index + `
             ORDER BY pub.publication_id DESC`;
@@ -81,30 +81,12 @@ function getQuery(queryType, index, userID, searchFor = ""){
                 FROM user AS u, publication AS pub
                 WHERE u.username = '`+ searchFor +`' AND pub.author_id = u.user_id
                 OR (pub.content LIKE CONCAT('%','`+ searchFor +`','%') AND pub.author_id = u.user_id)
-                OR (
-                    pub.publication_id IN (
-                        SELECT mention.publication_id FROM publication_mention AS mention, user AS mentionned 
-                        WHERE mentionned.username = '` + searchFor + `'))
-                OR (
-                    pub.publication_id IN (
-                        SELECT tag.publication_id FROM publication_hashtag AS tag 
-                        WHERE tag.hashtag = '`+ searchFor +`')
-                    )
                 ORDER BY pub.publication_id DESC;`
             }
             else {
                 `SELECT pub.*, u.* FROM user AS u, publication AS pub
                 WHERE u.username = '`+ searchFor +`' AND pub.author_id = u.user_id
                 OR (pub.content LIKE CONCAT('%','`+ searchFor +`','%') AND pub.author_id = u.user_id)
-                OR (
-                    pub.publication_id IN (
-                        SELECT mention.publication_id FROM publication_mention AS mention, user AS mentionned 
-                        WHERE mentionned.username = '` + searchFor + `'))
-                OR (
-                    pub.publication_id IN (
-                        SELECT tag.publication_id FROM publication_hashtag AS tag 
-                        WHERE tag.hashtag = '`+ searchFor +`')
-                    )
                 ORDER BY pub.publication_id DESC;`
             }
         default:
