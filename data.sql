@@ -4,12 +4,12 @@ CREATE DATABASE projetsangsiri;
 
 USE projetsangsiri;
 
-DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS user_subscription;
-DROP TABLE IF EXISTS publication;
 DROP TABLE IF EXISTS publication_reaction;
 DROP TABLE IF EXISTS publication_mention;
 DROP TABLE IF EXISTS publication_hashtag;
+DROP TABLE IF EXISTS user_subscription;
+DROP TABLE IF EXISTS publication;
+DROP TABLE IF EXISTS user;
 
 CREATE TABLE user(
 	user_id INTEGER AUTO_INCREMENT,
@@ -51,8 +51,7 @@ CREATE TABLE publication_reaction(
 
 CREATE TABLE publication_mention(
 	publication_id INTEGER,
-	user_mentionned INTEGER,
-	FOREIGN KEY (user_mentionned) REFERENCES user(user_id),
+	user_mentionned VARCHAR(32),
 	FOREIGN KEY (publication_id) REFERENCES publication(publication_id),
 	PRIMARY KEY(publication_id, user_mentionned)
 );

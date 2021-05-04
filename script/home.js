@@ -67,7 +67,7 @@ function updatePublications(){
         if(data.new_publications.length > 0)
         {
             index += data.new_publications.length;
-            publications.publicatoins.unshift(data.new_publications);
+            publications.publications.unshift(data.new_publications);
         }
     });
 }
@@ -85,7 +85,7 @@ function publishMessage(){
                 type: "post",
                 url: "/home/publish/",
                 data: { content: $('#publication-text').val()},
-            }).done();
+            }).done(function(){location.reload();});
         }
     })
 }

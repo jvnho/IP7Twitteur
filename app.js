@@ -121,16 +121,67 @@ app.post("/home/update", (req,res) => {
     });   
 });
 
+function strContainsHashtag(str){
+    var array = str.match(/#\w+/g);
+    if(array !== null)
+        return array.map((elt) => {
+            return elt.replace('#','');
+        });
+    return [];
+}
+
+function strContainsAt(str){
+    var array = str.match(/@\w+/g);
+    if(array !== null)
+        return array.map((elt) => {
+            return elt.replace('@','');
+        });
+    return [];
+}
+
 app.post("/home/publish/", (req,res) => {
     if(!req.session.initialized){
         res.redirect('/home/');
     } else {
         var query = "INSERT INTO publication(author_id,date,content) VALUES(?,NOW(),?)";
-        pool.query(query, [req.session.user_id, req.body.content], (err, rows, fields) =>{
+        pool.query(query, [req.session.user_id, req.body.content], (err, rows, fields) =>
+        {
             if(err) throw err;
+            var indexLastInserted = rows.insertId;
+            var hashTagArray = strContainsHashtag(req.body.content);
+            for(var i = 0; i < hashTagArray.length; i++)
+            {
+                insertHashtag(indexLastInserted, hashTagArray[i], function(err, results){
+                    if(err) throw err;
+                });
+            }
+            var mentionArray = strContainsAt(req.body.content);
+            for(var i = 0; i < mentionArray.length; i++)
+            {
+                insertMention(indexLastInserted, mentionArray[i], function(err, results){
+                    if(err) throw err;
+                });
+            }
+            res.sendStatus(200);            
         });
     }
 });
+
+function insertHashtag(index, hashtag, callback){
+    var query = "INSERT INTO publication_hashtag(publication_id,hashtag) VALUES(?,?)";
+    pool.query(query, [index, hashtag], (err, rows, fields) =>
+    {
+        callback(err,rows);
+    });
+}
+
+function insertMention(index, username, callback){
+    var query = "INSERT INTO publication_mention(publication_id,user_mentionned) VALUES(?,?)";
+    pool.query(query, [index, username], (err, rows, fields) =>
+    {
+        callback(err,rows);
+    });
+}
 
 app.post("/home/publicationtype", (req,res) => {
     var type = req.body.type;
