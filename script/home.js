@@ -16,6 +16,25 @@ new Vue({
 
 Vue.component('publication', {
     props: ['publication', 'connected', 'user_id'],
+    data : 
+    function(){
+        return {
+            content : ""
+        }
+    },
+    methods: 
+    {
+        addLink: function(str){
+            const regExprTag = /#\w+/g;
+            const regExprAt = /@\w+/g;
+            this.content = str.replace(regExprTag, (x) => {
+                return '<a style="text-decoration: none;cursor:pointer;" data-hashtag="'+ x.replace("#","")  + '" class="hashtag-clicked"><kbd>' + x +'</kbd></a>'
+            }).replace(regExprAt, (x) => {
+                return '<a style="text-decoration: none;cursor:pointer;" data-at="'+ x.replace("@","") + '" class="user-clicked"><kbd>' + x +'</kbd></a>' 
+            });
+            return this.content
+        }
+    },
     template:
     `
     <transition name="fade" appear>
@@ -23,7 +42,7 @@ Vue.component('publication', {
             <img v-bind:src="'../img/'+publication.picture" alt="" class="mr-3 mt-3 rounded-circle" style="width:125px;">
             <div class="media-body">
                 <h4>{{publication.username}} <small><i>{{publication.date}}</i></small></h4>
-                <p>{{publication.content}}</p>
+                <p v-html="addLink(publication.content)"></p>
                 <div v-if="this.connected" class="d-flex align-items-end">
                     <button :data-publication="publication.publication_id" v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Publication aimée (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
                     <button :data-publication="publication.publication_id" v-else type="button" class="btn btn-primary like-publication">Aimer la publication (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
@@ -36,7 +55,6 @@ Vue.component('publication', {
     </transition>
     `
 })
-
 var publications = new Vue({
     el: '#publications-container',
     data: {
@@ -52,6 +70,8 @@ $(document).ready(function(){
     publicationButtonClick();
     changePublicationType();
     makeResearch();
+    hashtagClick();
+    userNameClick();
     setInterval(updatePublications, 5000);
 });
 
@@ -181,5 +201,20 @@ function makeResearch(){
                 location.reload();
             });
         }
+    });
+}
+
+function hashtagClick(){
+    $(".hashtag-clicked").click(function(e){
+        e.preventDefault();
+        console.log(this);
+    });
+}
+
+
+function userNameClick(){
+    $(".user-clicked").click(function(e){
+        e.preventDefault();
+        console.log(this);
     });
 }
