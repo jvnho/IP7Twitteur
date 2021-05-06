@@ -158,13 +158,14 @@ app.post("/home/publish/", (req,res) => {
     if(!req.session.initialized){
         res.redirect('/home');
     } else {
-        var query = "INSERT INTO publication(author_id,date,content) VALUES(?,NOW(),?)";
-        pool.query(query, [req.session.user_id, req.body.content], (err, rows, fields) =>
+        var at_everyone = strContainsAtEveryone(req.body.content);
+        var query = "INSERT INTO publication(author_id,date,content,at_everyone) VALUES(?,NOW(),?,?)";
+        pool.query(query, [req.session.user_id, req.body.content, at_everyone], (err, rows, fields) =>
         {
             if(err) throw err;
             var indexLastInserted = rows.insertId;
             var hashTagArray = strContainsHashtag(req.body.content);
-            for(var i = 0; i < hashTagArray.length; i++)
+            for(var i = 0; i < hashTagArray.length; i++)    
             {
                 insertHashtag(indexLastInserted, hashTagArray[i], function(err, results){
                     if(err) throw err;
