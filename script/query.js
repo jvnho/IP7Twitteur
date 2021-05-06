@@ -54,6 +54,7 @@ function getQuery(queryType, index, userID, searchFor = ""){
 
         case "liked":  
             return `SELECT pub.*,u.*, true AS liked,
+            (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
             CASE WHEN EXISTS (SELECT * FROM user_subscription AS sub
                 WHERE sub.user_id = `+ userID +` 
                 AND sub.subscribe_to = pub.author_id) 
