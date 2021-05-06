@@ -20,7 +20,7 @@ function submitFormHandler(){
             var email = $('#email').val();
             $.ajax({
                 type: "post",
-                url: '/register/',
+                url: '/register',
                 data: {username: username, password: password, email: email},
                 statusCode: 
                 {
@@ -29,7 +29,7 @@ function submitFormHandler(){
                         $(".form-control").addClass("is-invalid");
                     },
                     200: function(){
-                        window.location.href = '/home/';
+                        window.location.href = '/home';
                     }
                 }
             });

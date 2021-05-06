@@ -28,7 +28,7 @@ const pool = mysql.createPool(
 
 app.get("/register", (req, res) =>{
     if(req.session.initialized)
-        res.redirect('/home/');
+        res.redirect('/home');
     else 
         res.render("register.ejs");     
 });
@@ -59,12 +59,12 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/register/*", (req, res) => {
-    res.redirect("/register/");
+    res.redirect("/register");
 });
 
 app.get("/login/", (req, res) => {
     if(req.session.initialized)
-        res.redirect('/home/');
+        res.redirect('/home');
     else 
         res.render("login.ejs");  
 });
@@ -80,7 +80,6 @@ app.post("/login/", (req, res) => {
             req.session.initialized = true;
             req.session.username = rows[0].username;
             req.session.user_id = parseInt(rows[0].user_id);
-            req.session.publicationType = "everyone"; //everyone || subscribed || mentionned || liked || search
             res.sendStatus(200);
         } else {
             res.sendStatus(400);
@@ -89,33 +88,43 @@ app.post("/login/", (req, res) => {
 });
 
 app.get("/login/*", (req, res) => {
-    res.redirect('/login/');
+    res.redirect('/login');
 });
 
-app.get("/home", (req, res) => {
-    getPublications(0, req, function(err, rows){
+function getPublicationType(request){
+    if(typeof request.session.initialized === "undefined")
+        return "nosession";
+    if(typeof request.query.type === "undefined")
+        return "all";
+    return request.query.type;
+}
+
+app.get(["/home", "/home/show*"], (req, res) => {
+    var type = getPublicationType(req);
+    getPublications(0, type, req, function(err, rows)
+    {
         if(err) throw err;
         res.render("home.ejs",
         {
             publications : rows, 
             connectionStatus : (req.session.initialized ? true : false), 
             userID : (typeof req.session.user_id !== "undefined" ? req.session.user_id : -1),
-            publicationType : (typeof req.session.publicationType !== "undefined" ? req.session.publicationType : "")
+            publicationType : type
         });
     });   
 });
 
 const myQuery = require('./script/query.js');
 
-function getPublications(index, req, callback){
-    var query = myQuery.getQuery(req.session.publicationType, index, req.session.user_id);
+function getPublications(index, publicationType, req, callback){
+    var query = myQuery.getQuery(publicationType, index, req.session.user_id);
     pool.query(query, (err,rows,fields) => {
         callback(err,rows);
     });
 }
 
 app.post("/home/update", (req,res) => {
-    getPublications(req.body.publication_index, req, function(err, rows){
+    getPublications(req.body.publicationIndex, req.body.publicationType, req, function(err, rows){
         if(err) throw err;
         res.send( {new_publications : rows} );
     });   
@@ -139,9 +148,15 @@ function strContainsAt(str){
     return [];
 }
 
+function strContainsAtEveryone(str){
+    if(str.match(/@everyone/gi) != -1)
+        return true;
+    return false;
+}
+
 app.post("/home/publish/", (req,res) => {
     if(!req.session.initialized){
-        res.redirect('/home/');
+        res.redirect('/home');
     } else {
         var query = "INSERT INTO publication(author_id,date,content) VALUES(?,NOW(),?)";
         pool.query(query, [req.session.user_id, req.body.content], (err, rows, fields) =>
@@ -183,23 +198,6 @@ function insertMention(index, username, callback){
     });
 }
 
-app.post("/home/publicationtype", (req,res) => {
-    var type = req.body.type;
-    if(type === "showAll")
-        req.session.publicationType = "everyone"
-    else if (type === "showSubscriptions")
-        req.session.publicationType = "subscribed"
-    else if (type === "showMsgToMe")
-        req.session.publicationType = "mentionned"
-    else if (type === "showLiked")
-        req.session.publicationType = "liked"
-    else if (type === "searchMsg"){
-        req.session.publicationType = "search"
-        req.session.searchFor = req.body.searchFor;
-    }
-    res.sendStatus(200);
-});
-
 app.post("/home/likepublication/", (req,res) => {
     var publication_id = req.body.publication_id;
     pool.query("INSERT INTO publication_reaction VALUES (?,?,true)", [publication_id, req.session.user_id], (err,rows,fields) =>{
@@ -232,22 +230,23 @@ app.post("/home/unsubscribe/", (req,res) =>{
     });
 });
 
+
 app.get("/home/*", (req, res) => {
-    res.redirect("/home/");
+    res.redirect("/home");
 });
 
 app.get("/logout/", (req, res) =>{
     req.session.destroy();
-    res.redirect('/home/');
+    res.redirect('/home');
 });
 
 
 app.get("/", (req,res) => {
-    res.redirect("/home/");
+    res.redirect("/home");
 });
 
 app.get("*", (req,res) => {
-    res.redirect("/home/");
+    res.redirect("/home");
 });
 
 app.listen(8080);

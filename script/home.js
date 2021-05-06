@@ -28,9 +28,9 @@ Vue.component('publication', {
             const regExprTag = /#\w+/g;
             const regExprAt = /@\w+/g;
             this.content = str.replace(regExprTag, (x) => {
-                return '<a style="text-decoration: none;cursor:pointer;" data-hashtag="'+ x.replace("#","")  + '" class="hashtag-clicked"><kbd>' + x +'</kbd></a>'
+                    return '<a style="text-decoration: none;cursor:pointer;" data-hashtag="'+ x.replace("#","") + '" class="hashtag-clicked"><kbd>' + x +'</kbd></a>'
             }).replace(regExprAt, (x) => {
-                return '<a style="text-decoration: none;cursor:pointer;" data-at="'+ x.replace("@","") + '" class="user-clicked"><kbd>' + x +'</kbd></a>' 
+                    return '<a style="text-decoration: none;cursor:pointer;" data-at="'+ x.replace("@","") + '" class="user-clicked"><kbd>' + x +'</kbd></a>' 
             });
             return this.content
         }
@@ -76,15 +76,19 @@ $(document).ready(function(){
 
 
 function updatePublications(){
+    /*
     if(publicationType === "search"){
         //si l'utilisateur fait une recherche on ne modifiera pas le contenu de la page
         return false;
-    }
-    $.post("/home/update", {publication_index : index}, (data) => 
+    }*/
+    console.log(index);
+    console.log(publicationType);
+    $.post("/home/update", {publicationIndex : index, publicationType : publicationType}, (data) => 
     {
         //s'il y a de nouvelles publications alors on les fait passer à VueJS qui met à jour dynamiquement le contenu de la page
         if(data.new_publications.length > 0)
         {
+            console.log(data.new_publications);
             index += data.new_publications.length;
             publications.publications.unshift(data.new_publications);
         }
@@ -182,10 +186,24 @@ function publicationButtonClick(){
 function changePublicationType(){
     $("#showAll, #showSubscriptions, #showMsgToMe, #showLiked").click(function()
     {
-        var type = $(this).prop("id");
-        $.post("/home/publicationtype", {type : type}, (data) =>{
-            location.reload();
-        });
+        var id = $(this).prop("id");
+        var type = "";
+        switch(id)
+        {
+            case "showAll":
+                type = "all"
+                break;
+            case "showSubscriptions":
+                type = "sub"
+                break;
+            case "showMsgToMe":
+                type = "me"
+                break;
+            case "showLiked":
+                type = "liked"
+                break;
+        }
+        document.location = "/home/show?type="+type;
     })
 }
 

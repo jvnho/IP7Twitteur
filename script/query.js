@@ -3,7 +3,7 @@ function getQuery(queryType, index, userID, searchFor = ""){
     switch(queryType)
     {
 
-        case "everyone":    
+        case "all":    
             return `SELECT pub.*, u.*,
             (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
             CASE WHEN EXISTS (SELECT * FROM publication_reaction AS r 
@@ -20,7 +20,7 @@ function getQuery(queryType, index, userID, searchFor = ""){
             ORDER BY pub.publication_id DESC`;
 
 
-        case "subscribed":   
+        case "sub":   
             return `SELECT pub.*, u.*, true as subscribed,
             (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
             CASE WHEN EXISTS (SELECT * FROM publication_reaction AS r 
@@ -34,7 +34,7 @@ function getQuery(queryType, index, userID, searchFor = ""){
             ORDER BY pub.publication_id DESC`;
 
 
-        case "mentionned":    
+        case "me":    
             return `SELECT pub.*, u.*, 
             (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
             CASE WHEN EXISTS (SELECT * FROM publication_reaction AS r 
@@ -90,7 +90,7 @@ function getQuery(queryType, index, userID, searchFor = ""){
                 OR (pub.content LIKE CONCAT('%','`+ searchFor +`','%') AND pub.author_id = u.user_id)
                 ORDER BY pub.publication_id DESC;`
             }
-        default:
+        case "nosession":
             return `SELECT pub.*, u.* FROM publication as pub, user as u 
             WHERE pub.author_id = u.user_id 
             AND pub.publication_id > ` + index + `
