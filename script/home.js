@@ -266,7 +266,8 @@ function makeResearch(){
 function hashtagClick(){
     $(".hashtag-clicked").click(function(e){
         e.preventDefault();
-        console.log(this);
+        var research = $(this).children("kbd").html().replace("#","");
+        document.location = "/home/show?type=search&for="+encodeURI(research);
     });
 }
 
@@ -274,6 +275,7 @@ function hashtagClick(){
 function userNameClick(){
     $(".user-clicked").click(function(e){
         e.preventDefault();
-        console.log(this);
+        var research = $(this).children("kbd").html().replace("@","");
+        document.location = "/home/show?type=search&for="+encodeURI(research);
     });
 }
