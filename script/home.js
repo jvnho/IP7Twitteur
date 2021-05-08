@@ -85,11 +85,10 @@ $(document).ready(function(){
 
 
 function updatePublications(){
-    /*
     if(publicationType === "search"){
         //si l'utilisateur fait une recherche on ne modifiera pas le contenu de la page
         return false;
-    }*/
+    }
     console.log(index);
     console.log(publicationType);
     $.post("/home/update", {publicationIndex : index, publicationType : publicationType}, (data) => 

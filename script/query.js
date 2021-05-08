@@ -34,7 +34,7 @@ function getQuery(queryType, index, userID, searchFor){
             ORDER BY pub.publication_id DESC`;
 
 
-        case "me":    
+        case "me":
             return `SELECT pub.*, u.*, 
             (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
             CASE WHEN EXISTS (SELECT * FROM publication_reaction AS r 
@@ -89,7 +89,7 @@ function getQuery(queryType, index, userID, searchFor){
                 ORDER BY pub.publication_id DESC;`
             }
             else {
-                `SELECT pub.*, u.* FROM user AS u, publication AS pub
+                return `SELECT pub.*, u.* FROM user AS u, publication AS pub
                 WHERE 
                     (u.username = '`+ searchFor +`' 
                     AND pub.author_id = u.user_id)
