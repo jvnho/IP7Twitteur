@@ -7,6 +7,15 @@ function getMaxIndex(array){
     return max;
 }
 
+//source : https://html-online.com/articles/get-url-parameters-javascript/
+function getUrlVars(){
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
 var index = getMaxIndex(publications);
 
 new Vue({
@@ -73,6 +82,8 @@ var publications = new Vue({
 })
 
 $(document).ready(function(){
+    initSearchBar();
+    initButtonType();
     publishMessage();
     publicationButtonHover();
     publicationButtonClick();
@@ -83,14 +94,40 @@ $(document).ready(function(){
     setInterval(updatePublications, 5000);
 });
 
+function initSearchBar(){
+    var getParams = getUrlVars();
+    var decodedURI = (typeof(getParams.for) !== "undefined" && getParams.for !== "" ? decodeURI(getParams.for) : ""); 
+    $("#searchPattern").val(decodedURI);
+}
+
+function initButtonType(){
+    var getParams = getUrlVars();
+    if(typeof getParams.type === "undefined"){
+        $("#showAll").addClass("active");
+    } else {
+        switch(getParams.type){
+            case "all":
+                $("#showAll").addClass("active");
+                break;
+            case "sub":
+                $("#showSubscriptions").addClass("active");
+                break;
+            case "me":
+                $("#showMsgToMe").addClass("active");
+                break;
+            case "liked":
+                $("#showLiked").addClass("active");
+                break;
+        }
+    }
+}
+
 
 function updatePublications(){
     if(publicationType === "search"){
         //si l'utilisateur fait une recherche on ne modifiera pas le contenu de la page
         return false;
     }
-    console.log(index);
-    console.log(publicationType);
     $.post("/home/update", {publicationIndex : index, publicationType : publicationType}, (data) => 
     {
         //s'il y a de nouvelles publications alors on les fait passer à VueJS qui met à jour dynamiquement le contenu de la page
@@ -98,7 +135,7 @@ function updatePublications(){
         {
             //console.log(data.new_publications);
             index = getMaxIndex(data.new_publications);
-            publications.publications.unshift(data.new_publications);
+            publications.publications.unshift(data.new_publications.reverse());
         }
     });
 }

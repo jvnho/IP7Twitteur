@@ -105,7 +105,6 @@ function getPublicationType(request){
 }
 
 app.get(["/home/show*", "/home"], (req, res) => {
-    console.log("kekw");
     var type = getPublicationType(req);
     getPublications(0, type, req, function(err, rows)
     {
