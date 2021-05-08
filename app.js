@@ -93,13 +93,18 @@ app.get("/login/*", (req, res) => {
 
 function getPublicationType(request){
     if(typeof request.session.initialized === "undefined")
-        return "nosession";
+    {
+        if(request.query.type === "search")
+            return "search";
+        else     
+            return "nosession";
+    }   
     if(typeof request.query.type === "undefined")
         return "all";
     return request.query.type;
 }
 
-app.get(["/home", "/home/show*"], (req, res) => {
+app.get(["/home/show*", "/home"], (req, res) => {
     var type = getPublicationType(req);
     getPublications(0, type, req, function(err, rows)
     {
@@ -117,7 +122,12 @@ app.get(["/home", "/home/show*"], (req, res) => {
 const myQuery = require('./script/query.js');
 
 function getPublications(index, publicationType, req, callback){
-    var query = myQuery.getQuery(publicationType, index, req.session.user_id);
+    var search = "";
+    if(publicationType === "search"){
+        searchFor = decodeURI(req.query.for);
+    }
+    var user_id = (typeof req.session.user_id !== "undefined" ? req.session.user_id : -1)
+    var query = myQuery.getQuery(publicationType, index, user_id, search);
     pool.query(query, (err,rows,fields) => {
         callback(err,rows);
     });
@@ -149,7 +159,7 @@ function strContainsAt(str){
 }
 
 function strContainsAtEveryone(str){
-    if(str.match(/@everyone/gi) != -1)
+    if(str.search(/@everyone/g) != -1)
         return true;
     return false;
 }

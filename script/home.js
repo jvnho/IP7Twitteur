@@ -1,4 +1,13 @@
-var index = publications.length;
+function getMaxIndex(array){
+    var max = 0;
+    for(var i = 0; i < array.length; i++){
+        if(array[i].publication_id > max)
+            max = array[i].publication_id;
+    }
+    return max;
+}
+
+var index = getMaxIndex(publications);
 
 new Vue({
     data : {
@@ -88,8 +97,8 @@ function updatePublications(){
         //s'il y a de nouvelles publications alors on les fait passer à VueJS qui met à jour dynamiquement le contenu de la page
         if(data.new_publications.length > 0)
         {
-            console.log(data.new_publications);
-            index += data.new_publications.length;
+            //console.log(data.new_publications);
+            index = getMaxIndex(data.new_publications);
             publications.publications.unshift(data.new_publications);
         }
     });
@@ -210,13 +219,10 @@ function changePublicationType(){
 function makeResearch(){
     $("#searchMsg").click(function()
     {
-        var type = $(this).prop("id");
         var research = $("#searchPattern").val();
         if(research !== "")
         {
-            $.post("/home/publicationtype", {type : type, searchFor : research}, (data) =>{
-                location.reload();
-            });
+            document.location = "/home/show?type=search&for="+encodeURI(research);
         }
     });
 }

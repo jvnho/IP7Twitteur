@@ -1,5 +1,5 @@
 
-function getQuery(queryType, index, userID, searchFor = ""){
+function getQuery(queryType, index, userID, searchFor){
     switch(queryType)
     {
 
@@ -15,7 +15,7 @@ function getQuery(queryType, index, userID, searchFor = ""){
                 AND sub.subscribe_to = pub.author_id) 
                 THEN true ELSE false END AS subscribed
             FROM publication AS pub, user AS u
-            WHERE pub.at_everyone = false 
+            WHERE pub.at_everyone = true 
             AND pub.author_id = u.user_id AND pub.publication_id > ` + index + `
             ORDER BY pub.publication_id DESC`;
 
@@ -67,7 +67,7 @@ function getQuery(queryType, index, userID, searchFor = ""){
 
 
         case "search":
-            if(typeof userID !== "undefined") //utilisateur connecté faisant une recherche
+            if(userID != -1) //utilisateur connecté faisant une recherche
             {
                 return `SELECT pub.*, u.*,
                 (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
@@ -80,14 +80,22 @@ function getQuery(queryType, index, userID, searchFor = ""){
                     AND sub.subscribe_to = pub.author_id) 
                     THEN true ELSE false END AS subscribed
                 FROM user AS u, publication AS pub
-                WHERE u.username = '`+ searchFor +`' AND pub.author_id = u.user_id
-                OR (pub.content LIKE CONCAT('%','`+ searchFor +`','%') AND pub.author_id = u.user_id)
+                WHERE 
+                    (u.username = '`+ searchFor +`' 
+                    AND pub.author_id = u.user_id)
+                OR (
+                    pub.content LIKE CONCAT('%','`+ searchFor +`','%') 
+                    AND pub.author_id = u.user_id)
                 ORDER BY pub.publication_id DESC;`
             }
             else {
                 `SELECT pub.*, u.* FROM user AS u, publication AS pub
-                WHERE u.username = '`+ searchFor +`' AND pub.author_id = u.user_id
-                OR (pub.content LIKE CONCAT('%','`+ searchFor +`','%') AND pub.author_id = u.user_id)
+                WHERE 
+                    (u.username = '`+ searchFor +`' 
+                    AND pub.author_id = u.user_id)
+                OR (
+                    pub.content LIKE CONCAT('%','`+ searchFor +`','%') 
+                    AND pub.author_id = u.user_id)
                 ORDER BY pub.publication_id DESC;`
             }
         case "nosession":
