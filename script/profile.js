@@ -7,6 +7,8 @@ function isFileImage(file) {
 $(document).ready(function(){
     passwordInputHandle();
     submitPasswordChange();
+
+    submitPicture();
 });
 
 function isSamePassword(){
@@ -57,7 +59,7 @@ function submitPasswordChange(){
         var newPassword = $("#password").val();
         $.ajax({
             type: "post",
-            url: '/edit/password',
+            url: '/edit/password/',
             data: {oldPassword: oldPassword, newPassword: newPassword},
             statusCode: 
             {
@@ -66,12 +68,43 @@ function submitPasswordChange(){
                     $("#old-password").siblings(".invalid-feedback").html("Mots de passe incorrect");
                 },
                 200: function(){
+                    $("#notify-alert").html("Mot de passe changé avec succès.");
                     showAlert();
                 }
             }
         });
     });
 }
+
+
+//source : https://mkyong.com/jquery/jquery-ajax-submit-a-multipart-form/
+function submitPicture(){
+    $("#submit-picture").click(function(e){
+        e.preventDefault();
+
+        $("#submit-picture").prop("disabled", true);
+        var form = $('#change-picture')[0];
+        var data = new FormData(form);
+        console.log(data);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: "/edit/picture/",
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (data) {
+                $("#notify-alert").html("Photo de profil changé avec succès");
+                showAlert();
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+            }
+        });
+    })
+}
+
 
 function showAlert(){
     $('.alert').removeClass('d-none');

@@ -281,7 +281,17 @@ app.post("/edit/password/", (req,res) => {
 })
 
 app.post('/edit/picture/', upload.single('img'), (req, res, next) => {
-    res.sendStatus(200);
+    pool.query("UPDATE user SET picture = ? WHERE user_id = ?", [req.session.username, req.session.user_id], (err,rows,fields) => {
+        if(err) throw err;
+        res.sendStatus(200);
+    });
+})
+
+app.post('/edit/picture/reset/', (req,res) => {
+    pool.query("UPDATE user SET picture = 'default.jpg' WHERE user_id = ?", [req.session.user_id], (err,rows,fields) => {
+        if(err) throw err;
+        res.sendStatus(200);
+    });
 })
 
 
