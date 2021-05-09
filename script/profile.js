@@ -9,6 +9,7 @@ $(document).ready(function(){
     submitPasswordChange();
 
     submitPicture();
+    resetProfilePic();
 });
 
 function isSamePassword(){
@@ -85,7 +86,6 @@ function submitPicture(){
         $("#submit-picture").prop("disabled", true);
         var form = $('#change-picture')[0];
         var data = new FormData(form);
-        console.log(data);
         $.ajax({
             type: "POST",
             enctype: 'multipart/form-data',
@@ -105,6 +105,23 @@ function submitPicture(){
     })
 }
 
+
+function resetProfilePic(){
+    $("#reset-picture").click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "/edit/picture/reset",
+            success: function (data) {
+                $("#notify-alert").html("Photo de profil supprimé avec succès");
+                showAlert();
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+            }
+        });
+    })
+}
 
 function showAlert(){
     $('.alert').removeClass('d-none');
