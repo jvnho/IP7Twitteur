@@ -4,6 +4,7 @@ const ejs = require("ejs");
 const path = require("path");
 const mysql = require('mysql');
 const md5 = require('md5');
+const multer = require('multer');
 //const bodyParser = require('body-parser')
 
 const app = express();
@@ -14,6 +15,18 @@ app.use(session({secret: 'lalalala', saveUninitialized: true, resave: true}));
 app.use("/", express.static(__dirname));
 app.use("/", express.static(__dirname + '/views/'));
 app.use("/", express.static(__dirname + '/public/'));
+
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb){
+      cb(null,__dirname + '/public/img/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, req.session.username);
+    }
+});
+
+var upload = multer({ storage: storage });
 
 app.set('view engine','ejs');
 
@@ -249,7 +262,7 @@ app.get("/edit/", (req, res) => {
     }
 });
 
-app.post("/edit/password", (req,res) => {
+app.post("/edit/password/", (req,res) => {
     var oldPassword = md5(req.body.oldPassword);
     var newPassword = md5(req.body.newPassword);
     pool.query("SELECT password FROM user WHERE user_id = ?", [req.session.user_id], (err,rows,fields) => 
@@ -266,6 +279,11 @@ app.post("/edit/password", (req,res) => {
         }
     });
 })
+
+app.post('/edit/picture/', upload.single('img'), (req, res, next) => {
+    res.sendStatus(200);
+})
+
 
 app.get("/home/*", (req, res) => {
     res.redirect("/home");

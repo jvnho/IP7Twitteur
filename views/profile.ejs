@@ -53,9 +53,11 @@
             </div>
         </form>
 
-        <form method="POST" class="needs-validation" id="changePicture" novalidate>
-            <div class="form-group d-flex justify-content-center">
-                <input class="btn btn-primary btn-lg " type="submit" id="submit-picture" value="Mettre à jour mon image de profil" disabled>
+         
+        <form action="/edit/picture/" id="change-picture" method="post" enctype="multipart/form-data">
+            <div class="custom-file">
+                <input type="file" accept="image/*" name="img" >
+                <input class="btn btn-primary btn-lg " type="submit" id="submit-picture" value="Mettre à jour mon image de profil">
             </div>
         </form>
     </div>
