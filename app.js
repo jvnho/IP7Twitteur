@@ -290,7 +290,6 @@ app.post('/edit/picture/', upload.single('img'), (req, res, next) => {
 
 app.post('/edit/picture/reset/', (req,res) => {
     var filePath = __dirname + '/public/img/' + req.session.username;
-    console.log(filePath);
     if(fs.existsSync(filePath))
         fs.unlinkSync(filePath);
     pool.query("UPDATE user SET picture = 'default.jpg' WHERE user_id = ?", [req.session.user_id], (err,rows,fields) => {

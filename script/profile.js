@@ -8,6 +8,7 @@ $(document).ready(function(){
     passwordInputHandle();
     submitPasswordChange();
 
+    pictureInputHandle();
     submitPicture();
     resetProfilePic();
 });
@@ -77,6 +78,18 @@ function submitPasswordChange(){
     });
 }
 
+function pictureInputHandle(){
+    $("#img-input").change(function(){
+        var validImageTypes = ["jpg", "jpeg", "png"];
+        if ($.inArray($(this).val().split('.').pop().toLowerCase(), validImageTypes) == -1){
+            $('#submit-picture').prop("disabled",true);
+            $('#submit-picture').removeClass('btn-primary').addClass('btn-danger');
+        } else {
+            $('#submit-picture').removeClass('btn-danger btn-primary').addClass('btn-success');
+            $('#submit-picture').prop("disabled",false);
+        }
+    });
+}
 
 //source : https://mkyong.com/jquery/jquery-ajax-submit-a-multipart-form/
 function submitPicture(){

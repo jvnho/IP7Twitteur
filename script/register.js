@@ -29,7 +29,7 @@ function submitFormHandler(){
                         $(".form-control").addClass("is-invalid");
                     },
                     200: function(){
-                        window.location.href = '/home';
+                        window.location.href = '/login?register=sucess';
                     }
                 }
             });
