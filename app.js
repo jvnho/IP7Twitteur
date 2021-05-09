@@ -5,6 +5,7 @@ const path = require("path");
 const mysql = require('mysql');
 const md5 = require('md5');
 const multer = require('multer');
+const fs = require('fs');
 //const bodyParser = require('body-parser')
 
 const app = express();
@@ -288,6 +289,10 @@ app.post('/edit/picture/', upload.single('img'), (req, res, next) => {
 })
 
 app.post('/edit/picture/reset/', (req,res) => {
+    var filePath = __dirname + '/public/img/' + req.session.username;
+    console.log(filePath);
+    if(fs.existsSync(filePath))
+        fs.unlinkSync(filePath);
     pool.query("UPDATE user SET picture = 'default.jpg' WHERE user_id = ?", [req.session.user_id], (err,rows,fields) => {
         if(err) throw err;
         res.sendStatus(200);
