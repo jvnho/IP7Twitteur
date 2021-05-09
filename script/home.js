@@ -59,7 +59,7 @@ Vue.component('publication', {
         <div class="publication media border p-4 mt-5">
             <img v-bind:src="'../img/'+publication.picture" alt="" class="mr-3 mt-3 rounded-circle" style="width:125px;">
             <div class="media-body">
-                <h4>{{publication.username}} <small><i>{{publication.date}}</i></small></h4>
+                <h4>{{publication.username}} <small><i>{{publication.date.slice(0,10) + " " + publication.date.slice(11,16)}}</i></small></h4>
                 <p v-html="addLink(publication.content)"></p>
                 <div v-if="this.connected && this.user_id !== publication.author_id" class="d-flex align-items-end">
                     <button :data-publication="publication.publication_id" v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Publication aimée (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
