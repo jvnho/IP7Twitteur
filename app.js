@@ -241,6 +241,31 @@ app.post("/home/unsubscribe/", (req,res) =>{
     });
 });
 
+app.get("/edit/", (req, res) => {
+    if(!req.session.initialized){
+        res.redirect("/home");
+    } else {
+        res.render("profile.ejs");
+    }
+});
+
+app.post("/edit/password", (req,res) => {
+    var oldPassword = md5(req.body.oldPassword);
+    var newPassword = md5(req.body.newPassword);
+    pool.query("SELECT password FROM user WHERE user_id = ?", [req.session.user_id], (err,rows,fields) => 
+    {
+        if(err) throw err;
+        if(rows[0].password === oldPassword){
+            pool.query("UPDATE user SET password = ? WHERE user_id = ?", [newPassword, req.session.user_id], (err,rows,fields) =>
+            {
+                if(err) throw err;
+                res.sendStatus(200);
+            });
+        } else {
+            res.sendStatus(400);
+        }
+    });
+})
 
 app.get("/home/*", (req, res) => {
     res.redirect("/home");

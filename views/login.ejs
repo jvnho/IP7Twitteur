@@ -21,10 +21,12 @@
         $("#nav").load("../navbar.html");
     });
     </script>
-    <div class="container">
-        <div id="notify-alert" class="d-none alert alert-danger alert-dismissible fade show text-center" role="alert">
+    <div class="container-fluid">
+        <div id="notify-alert" class="d-none alert alert-danger fade show text-center" role="alert">
             Utilisateur non existant ou mot de passe incorrect.
         </div>
+    </div>
+    <div class="container">
         <form method="post" class="needs-validation" id="loginForm" novalidate>
             <div class="form-group">
                 <label class="form-label" for="username">ID de connexion</label>
@@ -43,7 +45,7 @@
             </div>
 
             <div class="form-group d-flex justify-content-center">
-                <a href="/register/">Pas membre ? incrivez-vous </a>
+                <a href="/register/">Pas membre ? Inscrivez-vous </a>
             </div>
         </form>
     </div>
