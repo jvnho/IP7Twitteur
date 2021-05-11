@@ -99,6 +99,8 @@ $(document).ready(function(){
     makeResearch();
     hashtagClick();
     userNameClick();
+
+    
     setInterval(updatePublications, 5000);
 });
 
@@ -117,6 +119,9 @@ function initButtonType(){
             case "all":
                 $("#showAll").addClass("active");
                 break;
+            case "mine":
+                $("#showMine").addClass("active");
+                break;
             case "sub":
                 $("#showSubscriptions").addClass("active");
                 break;
@@ -131,8 +136,9 @@ function initButtonType(){
 }
 
 function updatePublications(){
-    if(publicationType === "search" || publicationType === "liked"){
+    if(publicationType === "search" || publicationType === "liked" || publicationType === "mine"){
         //si l'utilisateur fait une recherche on ne modifiera pas le contenu de la page
+        //aucun intérêt à rafraîchir ces pages
         return false;
     }
     $.post("/home/update", {publicationIndex : index, publicationType : publicationType}, (data) => 
@@ -159,7 +165,7 @@ function publishMessage(){
                 type: "post",
                 url: "/home/publish/",
                 data: { content: $('#publication-text').val()},
-            }).done(function(){location.reload();});
+            }).done(function(){location.href = '/home/show?type=mine';});
         }
     })
 }
@@ -235,7 +241,7 @@ function publicationButtonClick(){
 }
 
 function changePublicationType(){
-    $("#showAll, #showSubscriptions, #showMsgToMe, #showLiked").click(function()
+    $("#showAll, #showMine, #showSubscriptions, #showMsgToMe, #showLiked").click(function()
     {
         var id = $(this).prop("id");
         var type = "";
@@ -243,6 +249,9 @@ function changePublicationType(){
         {
             case "showAll":
                 type = "all"
+                break;
+            case "showMine":
+                type = "mine"
                 break;
             case "showSubscriptions":
                 type = "sub"

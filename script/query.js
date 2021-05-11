@@ -19,6 +19,21 @@ function getQuery(queryType, index, userID, searchFor){
             AND pub.author_id = u.user_id AND pub.publication_id > ` + index + `
             ORDER BY pub.publication_id DESC`;
 
+        case "mine":    
+            return `SELECT pub.*, u.*,
+            (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like,
+            CASE WHEN EXISTS (SELECT * FROM publication_reaction AS r 
+                WHERE pub.publication_id = r.publication_id 
+                AND r.reactor_id = `+ userID +`) 
+                THEN true ELSE false END AS liked,
+            CASE WHEN EXISTS (SELECT * FROM user_subscription AS sub
+                WHERE sub.user_id = `+ userID +` 
+                AND sub.subscribe_to = pub.author_id) 
+                THEN true ELSE false END AS subscribed
+            FROM publication AS pub, user AS u
+            WHERE pub.author_id = `+ userID +` 
+            AND pub.author_id = u.user_id AND pub.publication_id > ` + index + `
+            ORDER BY pub.publication_id DESC`;
 
         case "sub":   
             return `SELECT pub.*, u.*, true as subscribed,
