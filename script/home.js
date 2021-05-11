@@ -72,12 +72,20 @@ Vue.component('publication', {
     </transition>
     `
 })
+
 var publications = new Vue({
     el: '#publications-container',
     data: {
         publications : publications,
         isConnected : isConnected,
         user_id: user_id
+    },
+    methods: {
+        shiftPublicationArray(array){
+            for(var i = array.length-1; i >= 0; i--){
+                this.publications.unshift(array[i]);
+            }
+        }
     }
 })
 
@@ -122,9 +130,8 @@ function initButtonType(){
     }
 }
 
-
 function updatePublications(){
-    if(publicationType === "search"){
+    if(publicationType === "search" || publicationType === "liked"){
         //si l'utilisateur fait une recherche on ne modifiera pas le contenu de la page
         return false;
     }
@@ -133,9 +140,8 @@ function updatePublications(){
         //s'il y a de nouvelles publications alors on les fait passer à VueJS qui met à jour dynamiquement le contenu de la page
         if(data.new_publications.length > 0)
         {
-            //console.log(data.new_publications);
             index = getMaxIndex(data.new_publications);
-            publications.publications.unshift(data.new_publications.reverse());
+            publications.shiftPublicationArray(data.new_publications);
         }
     });
 }
