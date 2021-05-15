@@ -154,6 +154,7 @@ function updatePublications(){
 
 function publishMessage(){
     $("#publish-message").click(function(event){
+        $(this).prop("disabled", true);
         event.preventDefault();
         if($('#publication-text').val().length > 280){
             $("#user-publication-error").html("Message ne doit pas excéder 280 caractères.");
@@ -167,6 +168,7 @@ function publishMessage(){
                 data: { content: $('#publication-text').val()},
             }).done(function(){location.href = '/home/show?type=mine';});
         }
+        $(this).prop("disabled", false);
     })
 }
 
@@ -202,41 +204,49 @@ function publicationButtonClick(){
     $(".unlike-publication").click( function() 
     {
         var buttonClicked = $(this);
+        buttonClicked.prop("disabled", true);
         var publication_id = buttonClicked.data('publication');
         var number_likes = Number.parseInt(buttonClicked.children(".number-likes").html());
         $.post('/home/unlikepublication/', {publication_id : publication_id});
         buttonClicked.removeClass('unlike-publication').addClass('like-publication');
         buttonClicked.html('Aimer la publication (<span class="number-likes">' + (number_likes-1) + '</span>)');
+        buttonClicked.prop("disabled", false);
     });
 
     $(".like-publication").click( function()
     {
         var buttonClicked = $(this);
+        buttonClicked.prop("disabled", true);
         var publication_id = buttonClicked.data('publication');
         var number_likes = Number.parseInt(buttonClicked.children(".number-likes").html());
         $.post('/home/likepublication/', {publication_id : publication_id});
         buttonClicked.html('Publication aimée (<span class="number-likes">'+ (number_likes+1) + '</span>)');   
         buttonClicked.addClass('unlike-publication');
         buttonClicked.removeClass('like-publication');
+        buttonClicked.prop("disabled", false);
     });
 
     $(".sub").click( function()
     {
         var buttonClicked = $(this);
+        buttonClicked.prop("disabled", true);
         var author_id = buttonClicked.data('author_id');
         $.post('/home/subscribe/', {subscribe_to_id : author_id});
         buttonClicked.removeClass('sub').addClass('unsub');
         buttonClicked.html("Abonné(e)");
+        buttonClicked.prop("disabled", false);
     });
 
     $(".unsub").click( function()
     {
         var buttonClicked = $(this);
+        buttonClicked.prop("disabled", true);
         var author_id = buttonClicked.data('author_id');
         $.post('/home/unsubscribe/', {subscribe_to_id : author_id});
         buttonClicked.removeClass('unsub');
         buttonClicked.addClass('sub');
         buttonClicked.html("S'abonner");
+        buttonClicked.prop("disabled", false);
     });
 }
 
@@ -270,16 +280,19 @@ function changePublicationType(){
 function makeResearch(){
     $("#searchMsg").click(function()
     {
+        $(this).prop("disabled", true);
         var research = $("#searchPattern").val();
         if(research !== "")
         {
             document.location = "/home/show?type=search&for="+encodeURI(research);
         }
+        $(this).prop("disabled", false);
     });
 }
 
 function hashtagClick(){
     $(".hashtag-clicked").click(function(e){
+        $(this).prop("disabled", true);
         e.preventDefault();
         var research = $(this).children("kbd").html().replace("#","");
         document.location = "/home/show?type=search&for="+encodeURI(research);
@@ -289,6 +302,7 @@ function hashtagClick(){
 
 function userNameClick(){
     $(".user-clicked").click(function(e){
+        $(this).prop("disabled", true);
         e.preventDefault();
         var research = $(this).children("kbd").html().replace("@","");
         document.location = "/home/show?type=search&for="+encodeURI(research);

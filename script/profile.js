@@ -56,6 +56,8 @@ function passwordInputHandle(){
 function submitPasswordChange(){
     $("#submit-password").click(function(e)
     {
+        var submitBtn = $(this);
+        submitBtn.prop("disabled", true);
         e.preventDefault();
         var oldPassword = $("#old-password").val();
         var newPassword = $("#password").val();
@@ -68,10 +70,12 @@ function submitPasswordChange(){
                 400: function() {
                     $("#old-password").addClass("is-invalid").removeClass("is-valid");
                     $("#old-password").siblings(".invalid-feedback").html("Mots de passe incorrect");
+                    submitBtn.prop("disabled", false);
                 },
                 200: function(){
                     $("#notify-alert").html("Mot de passe changé avec succès.");
                     showAlert();
+                    submitBtn.prop("disabled", false);
                 }
             }
         });
@@ -95,7 +99,6 @@ function pictureInputHandle(){
 function submitPicture(){
     $("#submit-picture").click(function(e){
         e.preventDefault();
-
         $("#submit-picture").prop("disabled", true);
         var form = $('#change-picture')[0];
         var data = new FormData(form);
@@ -110,9 +113,11 @@ function submitPicture(){
             success: function (data) {
                 $("#notify-alert").html("Photo de profil changé avec succès");
                 showAlert();
+                $("#submit-picture").prop("disabled", false);
             },
             error: function (e) {
                 console.log("ERROR : ", e);
+                $("#submit-picture").prop("disabled", false);
             }
         });
     })
@@ -121,6 +126,8 @@ function submitPicture(){
 
 function resetProfilePic(){
     $("#reset-picture").click(function(e){
+        var resetBtn = $(this);
+        resetBtn.prop("disabled", true);
         e.preventDefault();
         $.ajax({
             type: "POST",
@@ -128,9 +135,11 @@ function resetProfilePic(){
             success: function (data) {
                 $("#notify-alert").html("Photo de profil supprimé avec succès");
                 showAlert();
+                resetBtn.prop("disabled", false);
             },
             error: function (e) {
                 console.log("ERROR : ", e);
+                resetBtn.prop("disabled", false);
             }
         });
     })

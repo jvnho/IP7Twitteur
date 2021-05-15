@@ -5,6 +5,8 @@ $(document).ready(function(){
 
 function loginButtonHandle(){
     $("#submit").click(function(event){
+        var submitBtn = $(this);
+        submitBtn.prop("disabled", true);
         event.preventDefault(); 
         $(".form-control").removeClass("is-invalid");
         $(".form-control").removeClass("is-valid");
@@ -19,6 +21,7 @@ function loginButtonHandle(){
                 statusCode: 
                 {
                     400: function() {
+                        submitBtn.prop("disabled", false);
                         showAlert();
                         $(".form-control").addClass("is-invalid");
                     },
@@ -28,6 +31,7 @@ function loginButtonHandle(){
                 }
             });
         }
+        submitBtn.prop("disabled", false);
     });
 }
 

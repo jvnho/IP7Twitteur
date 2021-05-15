@@ -5,12 +5,15 @@ $(document).ready(function(){
 
 function submitFormHandler(){
     $("#submit").click(function(event){
+        var submitBtn = $(this);
+        submitBtn.prop("disabled", true);
         event.preventDefault();
         var formValid = true;
         $('.form-control').each(function(){
             if($(this).val() === "" || $(this).hasClass("is-valid") == false){
                 $(this).addClass("is-invalid");
                 formValid = false;
+                submitBtn.prop("disabled", false);
             }
         });
         if(formValid)
@@ -27,9 +30,11 @@ function submitFormHandler(){
                     400: function() {
                         showAlert();
                         $(".form-control").addClass("is-invalid");
+                        submitBtn.prop("disabled", false);
                     },
                     200: function(){
                         window.location.href = '/login?register=sucess';
+                        submitBtn.prop("disabled", false);
                     }
                 }
             });
