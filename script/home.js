@@ -62,10 +62,10 @@ Vue.component('publication', {
                 <h4>{{publication.username}} <small><i>{{publication.date.slice(0,10) + " " + publication.date.slice(11,16)}}</i></small></h4>
                 <p v-html="addLink(publication.content)"></p>
                 <div v-if="this.connected && this.user_id !== publication.author_id" class="d-flex align-items-end">
-                    <button :data-publication="publication.publication_id" v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Publication aimée (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
+                    <button :data-publication="publication.publication_id" v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Ne plus aimer (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
                     <button :data-publication="publication.publication_id" v-else type="button" class="btn btn-primary like-publication">Aimer la publication (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
                     <button :data-author_id="publication.author_id" v-if="publication.subscribed == 0" type="button" class="btn btn-primary sub">S'abonner</button>
-                    <button :data-author_id="publication.author_id" v-else type="button" class="btn btn-primary unsub">Abonné(e)</button>
+                    <button :data-author_id="publication.author_id" v-else type="button" class="btn btn-primary unsub">Se désabonner</button>
                 </div>
             </div>
         </div>
@@ -173,81 +173,91 @@ function publishMessage(){
 }
 
 function publicationButtonHover(){
-    var textSaved = "";
-    $(".unlike-publication, .unsub").mouseenter(function()
+   
+    $("body").on('mouseenter', ".unlike-publication, .unsub", function()
     {
-        textSaved = $(this).html();
         $(this).removeClass("btn-primary").addClass("btn-danger");
-        if($(this).hasClass("unsub"))
-            $(this).html("Se désabonner");
-        else if($(this).hasClass("unlike-publication"))
-            $(this).html("Ne plus aimer la publication");  
+    });
+
+    $("body").on('mouseleave', ".unlike-publication, .unsub", function(){
+        $(this).addClass("btn-primary").removeClass("btn-danger");
     })
 
-    $(".like-publication, .sub").mouseenter(function()
+    $("body").on("mouseenter", ".like-publication, .sub", function()
     {
-        textSaved = $(this).html();
         $(this).removeClass("btn-primary").addClass("btn-success");
     })
 
-    $(".unsub, .unlike-publication").mouseleave(function(){
-        $(this).addClass("btn-primary").removeClass("btn-danger").html(textSaved);
-    })
-
-    $(".sub, .like-publication").mouseleave(function(){
-        $(this).addClass("btn-primary").removeClass("btn-success").html(textSaved);
+    $("body").on("mouseleave",".like-publication, .sub", function(){
+        $(this).addClass("btn-primary").removeClass("btn-success");
     })
 }
 
 
 function publicationButtonClick(){
-    $(".unlike-publication").click( function() 
+    $("body").on("click", ".unlike-publication", function(e) 
     {
+        e.preventDefault();
         var buttonClicked = $(this);
         buttonClicked.prop("disabled", true);
         var publication_id = buttonClicked.data('publication');
-        var number_likes = Number.parseInt(buttonClicked.children(".number-likes").html());
-        $.post('/home/unlikepublication/', {publication_id : publication_id});
-        buttonClicked.removeClass('unlike-publication').addClass('like-publication');
-        buttonClicked.html('Aimer la publication (<span class="number-likes">' + (number_likes-1) + '</span>)');
-        buttonClicked.prop("disabled", false);
+        var number_likes = (Number.parseInt(buttonClicked.children(".number-likes").html())) - 1;
+        $.post('/home/unlikepublication/', {publication_id : publication_id}, function(data)
+        {
+            buttonClicked.html('Aimer la publication (<span class="number-likes">' + number_likes + '</span>)');
+            buttonClicked.removeClass('unlike-publication btn-danger').addClass('like-publication btn-success');
+            buttonClicked.prop("disabled", false);
+        });
     });
 
-    $(".like-publication").click( function()
+    $("body").on("click",".like-publication", function(e)
     {
+        e.preventDefault();
         var buttonClicked = $(this);
         buttonClicked.prop("disabled", true);
         var publication_id = buttonClicked.data('publication');
-        var number_likes = Number.parseInt(buttonClicked.children(".number-likes").html());
-        $.post('/home/likepublication/', {publication_id : publication_id});
-        buttonClicked.html('Publication aimée (<span class="number-likes">'+ (number_likes+1) + '</span>)');   
-        buttonClicked.addClass('unlike-publication');
-        buttonClicked.removeClass('like-publication');
-        buttonClicked.prop("disabled", false);
+        var number_likes = (Number.parseInt(buttonClicked.children(".number-likes").html())) + 1;
+        $.post('/home/likepublication/', {publication_id : publication_id}, function(data)
+        {
+            buttonClicked.html('Ne plus aimer (<span class="number-likes">'+ number_likes + '</span>)');   
+            buttonClicked.addClass('unlike-publication btn-danger').removeClass('like-publication btn-success');
+            buttonClicked.prop("disabled", false);
+        });
     });
 
-    $(".sub").click( function()
+    $("body").on("click", ".sub", function(e)
     {
+        e.preventDefault();
         var buttonClicked = $(this);
         buttonClicked.prop("disabled", true);
         var author_id = buttonClicked.data('author_id');
-        $.post('/home/subscribe/', {subscribe_to_id : author_id});
-        buttonClicked.removeClass('sub').addClass('unsub');
-        buttonClicked.html("Abonné(e)");
-        buttonClicked.prop("disabled", false);
+        $.post('/home/subscribe/', {subscribe_to_id : author_id}, function(data)
+        {
+            buttonClicked.html("Se désabonner");
+            buttonClicked.removeClass('sub btn-success').addClass('unsub btn-danger');
+            buttonClicked.prop("disabled", false);
+        });
+
     });
 
-    $(".unsub").click( function()
+    $("body").on("click", ".unsub", function(e)
     {
+        e.preventDefault();
         var buttonClicked = $(this);
         buttonClicked.prop("disabled", true);
         var author_id = buttonClicked.data('author_id');
-        $.post('/home/unsubscribe/', {subscribe_to_id : author_id});
-        buttonClicked.removeClass('unsub');
-        buttonClicked.addClass('sub');
-        buttonClicked.html("S'abonner");
-        buttonClicked.prop("disabled", false);
+        $.post('/home/unsubscribe/', {subscribe_to_id : author_id}, function(data)
+        {
+            buttonClicked.html("S'abonner");
+            buttonClicked.removeClass('unsub btn-danger').addClass('sub btn-success');
+            buttonClicked.prop("disabled", false);
+        });
     });
+}
+
+//fonction met à jour le bouton s'abonner d'une publication quand un utilisateur s'abonne à un autre
+function updateAllSubBtn(){
+
 }
 
 function changePublicationType(){
