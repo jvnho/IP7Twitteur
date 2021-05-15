@@ -56,7 +56,7 @@ Vue.component('publication', {
     template:
     `
     <transition name="fade" appear>
-        <div class="publication media border p-4 mt-5">
+        <div :data-author_id="publication.author_id" class="publication media border p-4 mt-5">
             <img v-bind:src="'../img/'+publication.picture" alt="" class="mr-3 mt-3 rounded-circle" style="width:125px;">
             <div class="media-body">
                 <h4>{{publication.username}} <small><i>{{publication.date.slice(0,10) + " " + publication.date.slice(11,16)}}</i></small></h4>
@@ -64,8 +64,8 @@ Vue.component('publication', {
                 <div v-if="this.connected && this.user_id !== publication.author_id" class="d-flex align-items-end">
                     <button :data-publication="publication.publication_id" v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Ne plus aimer (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
                     <button :data-publication="publication.publication_id" v-else type="button" class="btn btn-primary like-publication">Aimer la publication (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
-                    <button :data-author_id="publication.author_id" v-if="publication.subscribed == 0" type="button" class="btn btn-primary sub">S'abonner</button>
-                    <button :data-author_id="publication.author_id" v-else type="button" class="btn btn-primary unsub">Se désabonner</button>
+                    <button :data-author_id="publication.author_id" v-if="publication.subscribed == 0" type="button" class="btn btn-primary subscription sub">S'abonner</button>
+                    <button :data-author_id="publication.author_id" v-else type="button" class="btn btn-primary subscription unsub">Se désabonner</button>
                 </div>
             </div>
         </div>
@@ -234,8 +234,9 @@ function publicationButtonClick(){
         $.post('/home/subscribe/', {subscribe_to_id : author_id}, function(data)
         {
             buttonClicked.html("Se désabonner");
-            buttonClicked.removeClass('sub btn-success').addClass('unsub btn-danger');
+            buttonClicked.removeClass('btn-success').addClass('btn-danger');
             buttonClicked.prop("disabled", false);
+            setBtnToUnSub(author_id);
         });
 
     });
@@ -251,13 +252,35 @@ function publicationButtonClick(){
             buttonClicked.html("S'abonner");
             buttonClicked.removeClass('unsub btn-danger').addClass('sub btn-success');
             buttonClicked.prop("disabled", false);
+            setBtnToSub(author_id);
         });
     });
 }
 
-//fonction met à jour le bouton s'abonner d'une publication quand un utilisateur s'abonne à un autre
-function updateAllSubBtn(){
+//fonction met à jour le bouton s'abonner des publications quand un utilisateur s'abonne à un autre
+function setBtnToUnSub(author_id){
+    $(".publication").each(function(){
+        if(Number.parseInt($(this).data("author_id")) == author_id){
+            $(this).children(".media-body").children("div")
+            .children(".subscription")
+            .addClass("unsub")
+            .removeClass("sub")
+            .html("Se désabonner");
+        }
+    })
+}
 
+//fonction met à jour le bouton s'abonner des publications quand un utilisateur se désabonne à un autre
+function setBtnToSub(author_id){
+    $(".publication").each(function(){
+        if(Number.parseInt($(this).data("author_id")) == author_id){
+            $(this).children(".media-body").children("div")
+            .children(".subscription")
+            .addClass("sub")
+            .removeClass("unsub")
+            .html("S'abonner");
+        }
+    })
 }
 
 function changePublicationType(){
