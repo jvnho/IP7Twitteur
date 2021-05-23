@@ -1,3 +1,5 @@
+# Instructions
+
 - Ouvrir un terminal dans le répertoire courant, dans l'interpréteur mySQL, entrez `source tables.sql` (si vous êtes bien à la racine du projet) ce qui devrait créer la base de données et ses données
 associés, vous pouvez fermer mySQL.
 
