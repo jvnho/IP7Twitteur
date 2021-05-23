@@ -23,10 +23,10 @@ function checkOldPassEntry(){
 
 function toggleSubmitPassBtn(enable){
     if(enable){
-        $("#submit-password").removeClass("btn-primary").addClass("btn-success");
+        $("#submit-password").removeClass("btn-outline-dark").addClass("btn-outline-success");
         $("#submit-password").prop("disabled", !enable);
     } else {
-        $("#submit-password").addClass("btn-primary").removeClass("btn-success");
+        $("#submit-password").addClass("btn-outline-primary").removeClass("btn-outline-success");
         $("#submit-password").prop("disabled", !enable);
     }
 }
@@ -34,14 +34,14 @@ function toggleSubmitPassBtn(enable){
 function passwordInputHandle(){
     $("#old-password, #password, #password-confirm").keyup(function()
     {
-        $("#submit-password").removeClass("btn-primary btn-success");
+        $("#submit-password").removeClass("btn-outline-primary btn-outline-success");
         $("#old-password").removeClass("is-valid is-invalid");
         $("#password").removeClass("is-valid is-invalid");
         $("#password-confirm").removeClass("is-valid is-invalid");
         if(isSamePassword() == false){
             toggleSubmitPassBtn(false);
             $(".twin-password").addClass("is-invalid");
-            $(".twin-password").siblings(".invalid-feedback").html("Mots de passe non identiques");
+            $(".twin-password").siblings(".invalid-feedback").html("Mot de passe non identiques");
         } else if(checkOldPassEntry() == false){
             toggleSubmitPassBtn(false);
             $("#old-password").addClass("is-invalid");
@@ -87,9 +87,9 @@ function pictureInputHandle(){
         var validImageTypes = ["jpg", "jpeg", "png"];
         if ($.inArray($(this).val().split('.').pop().toLowerCase(), validImageTypes) == -1){
             $('#submit-picture').prop("disabled",true);
-            $('#submit-picture').removeClass('btn-primary').addClass('btn-danger');
+            $('#submit-picture').removeClass('btn-outline-primary').addClass('btn-outline-danger');
         } else {
-            $('#submit-picture').removeClass('btn-danger btn-primary').addClass('btn-success');
+            $('#submit-picture').removeClass('btn-outline-danger btn-outline-dark').addClass('btn-outline-success');
             $('#submit-picture').prop("disabled",false);
         }
     });
