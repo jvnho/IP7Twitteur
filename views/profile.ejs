@@ -48,21 +48,17 @@
                 <div class="valid-feedback">OK.</div>
                 <div class="invalid-feedback">Veillez remplir ce champ.</div>
             </div>
-            <div class="form-group d-flex justify-content-center">
-                <input class="btn btn-outline-dark btn-lg " type="submit" id="submit-password" value="Mettre à jour mon mot de passe" disabled>
+            <div class="form-group d-flex justify-content-center mt-5">
+                <input class="btn btn-outline-dark btn-lg" type="submit" id="submit-password" value="Mettre à jour mon mot de passe" disabled>
             </div>
         </form>
 
-        <form class="mt-5 mb-5" action="/edit/picture/" id="change-picture" method="post" enctype="multipart/form-data">
-            <div class="custom-file">
+        <form class="form-inline mt-5 mb-5" action="/edit/picture/" id="change-picture" method="post" enctype="multipart/form-data">
                 <input id="img-input" type="file" accept="image/*" name="img" >
-                <input class="btn btn-outline-dark btn-lg" type="submit" id="submit-picture" value="Mettre à jour mon image de profil" disabled>
-            </div>
+                <input class="btn btn-outline-dark btn-lg mr-3" type="submit" id="submit-picture" value="Mettre à jour mon image de profil" disabled>
+                <button class="btn btn-outline-danger btn-lg" id="reset-picture" href="" >Supprimer ma photo de profil</a>
         </form>
 
-        <div class="text-center">
-            <button class="btn btn-outline-danger btn-lg" id="reset-picture" href="" >Supprimer ma photo de profil</a>
-        </div>
     </div>
 </body>
 </html>
