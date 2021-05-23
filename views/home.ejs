@@ -11,6 +11,7 @@
     <title>Accueil</title>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -31,23 +32,23 @@
 
         <div class="input-group mb-3">
             <input type="text" class="form-control" id="searchPattern" placeholder="Chercher un utilisateur, un message, un hashtag...">
-            <button class="btn btn-primary" type="button" id="searchMsg">Lancer la recherche</button>
+            <button class="btn btn-outline-dark" type="button" id="searchMsg"><i class="bi bi-search"> </i>Lancer la recherche</button>
         </div>
 
         <div v-if="isConnected" id="user-menu-button" class="container-fluid">
             <div class="btn-group">
-                <button type="button" id="showAll" class="btn btn-primary">Tout le monde</button>
-                <button type="button" id="showMine" class="btn btn-primary">Mes publications</button>  
-                <button type="button" id="showSubscriptions" class="btn btn-primary">Mes abonnements</button>
-                <button type="button" id="showMsgToMe" class="btn btn-primary">Mes mentions</button>
-                <button type="button" id="showLiked" class="btn btn-primary">Publications aimées</button>  
+                <button type="button" id="showAll" class="btn btn-outline-dark">Tout le monde</button>
+                <button type="button" id="showMine" class="btn btn-outline-dark">Mes publications</button>  
+                <button type="button" id="showSubscriptions" class="btn btn-outline-dark">Mes abonnements</button>
+                <button type="button" id="showMsgToMe" class="btn btn-outline-dark">Mes mentions</button>
+                <button type="button" id="showLiked" class="btn btn-outline-dark">Publications aimées</button>  
             </div>
         </div>
 
         <div id="user-form-publication" v-if="isConnected" class="container">
             <p id="user-publication-error" style="color:red;"></p>
             <textarea class="form-control" rows="3" id="publication-text" style="resize:none;"></textarea>
-            <button id="publish-message" class="btn btn-primary">Publier</button>
+            <button id="publish-message" class="btn btn-outline-dark">Publier</button>
         </div>
 
         <div id="publications-container" class="container">

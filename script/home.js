@@ -59,14 +59,34 @@ Vue.component('publication', {
         <div :data-author_id="publication.author_id" class="publication media border p-4 mt-5">
             <img v-bind:src="'../img/'+publication.picture" alt="" class="mr-3 mt-3 rounded-circle" style="width:125px;">
             <div class="media-body">
-                <h4>{{publication.username}} <small><i>{{publication.date.slice(0,10) + " " + publication.date.slice(11,16)}}</i></small></h4>
+                <h4>
+                    {{publication.username}} 
+                    <small>
+                        <i>{{publication.date.slice(0,10) + " " + publication.date.slice(11,16)}}</i>
+                    </small>
+                    <div v-if="this.connected && this.user_id !== publication.author_id" class="d-inline align-items-end">
+                    
+                        <button :data-publication="publication.publication_id" v-if="publication.liked" type="button" class="btn btn-outline-dark btn-sm unlike-publication">
+                        <i class="bi bi-hand-thumbs-up-fill"></i><span class="number-likes">{{publication.nbr_like}}</span>
+                        </button>
+
+                        <button :data-publication="publication.publication_id" v-else type="button" class="btn btn-outline-dark btn-sm like-publication">
+                        <i class="bi bi-hand-thumbs-up"></i><span class="number-likes">{{publication.nbr_like}}</span>
+                        </button>
+
+                        <button :data-author_id="publication.author_id" v-if="publication.subscribed == 0" type="button" class="btn btn-outline-dark btn-sm subscription sub">
+                            S'abonner
+                        </button>
+
+                        <button :data-author_id="publication.author_id" v-else type="button" class="btn btn-outline-dark btn-sm subscription unsub">
+                            Se désabonner
+                        </button>
+                    </div>
+                    <div v-else class="d-inline">
+                        <small><i class="bi bi-hand-thumbs-up"></i>{{publication.nbr_like}}</small>
+                    </div>
+                </h4>
                 <p v-html="addLink(publication.content)"></p>
-                <div v-if="this.connected && this.user_id !== publication.author_id" class="d-flex align-items-end">
-                    <button :data-publication="publication.publication_id" v-if="publication.liked" type="button" class="btn btn-primary unlike-publication">Ne plus aimer (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
-                    <button :data-publication="publication.publication_id" v-else type="button" class="btn btn-primary like-publication">Aimer la publication (<span class="number-likes">{{publication.nbr_like}}</span>)</button>
-                    <button :data-author_id="publication.author_id" v-if="publication.subscribed == 0" type="button" class="btn btn-primary subscription sub">S'abonner</button>
-                    <button :data-author_id="publication.author_id" v-else type="button" class="btn btn-primary subscription unsub">Se désabonner</button>
-                </div>
             </div>
         </div>
     </transition>
@@ -176,20 +196,20 @@ function publicationButtonHover(){
    
     $("body").on('mouseenter', ".unlike-publication, .unsub", function()
     {
-        $(this).removeClass("btn-primary").addClass("btn-danger");
+        $(this).removeClass("btn-outline-dark").addClass("btn-outline-danger");
     });
 
     $("body").on('mouseleave', ".unlike-publication, .unsub", function(){
-        $(this).addClass("btn-primary").removeClass("btn-danger");
+        $(this).addClass("btn-outline-dark").removeClass("btn-outline-danger");
     })
 
     $("body").on("mouseenter", ".like-publication, .sub", function()
     {
-        $(this).removeClass("btn-primary").addClass("btn-success");
+        $(this).removeClass("btn-outline-dark").addClass("btn-outline-success");
     })
 
     $("body").on("mouseleave",".like-publication, .sub", function(){
-        $(this).addClass("btn-primary").removeClass("btn-success");
+        $(this).addClass("btn-outline-dark").removeClass("btn-outline-success");
     })
 }
 
@@ -204,8 +224,8 @@ function publicationButtonClick(){
         var number_likes = (Number.parseInt(buttonClicked.children(".number-likes").html())) - 1;
         $.post('/home/unlikepublication/', {publication_id : publication_id}, function(data)
         {
-            buttonClicked.html('Aimer la publication (<span class="number-likes">' + number_likes + '</span>)');
-            buttonClicked.removeClass('unlike-publication btn-danger').addClass('like-publication btn-success');
+            buttonClicked.html('<i class="bi bi-hand-thumbs-up"></i><span class="number-likes">' + number_likes + '</span>');
+            buttonClicked.removeClass('unlike-publication btn-outline-danger').addClass('like-publication btn-outline-success');
             buttonClicked.prop("disabled", false);
         });
     });
@@ -219,8 +239,8 @@ function publicationButtonClick(){
         var number_likes = (Number.parseInt(buttonClicked.children(".number-likes").html())) + 1;
         $.post('/home/likepublication/', {publication_id : publication_id}, function(data)
         {
-            buttonClicked.html('Ne plus aimer (<span class="number-likes">'+ number_likes + '</span>)');   
-            buttonClicked.addClass('unlike-publication btn-danger').removeClass('like-publication btn-success');
+            buttonClicked.html('<i class="bi bi-hand-thumbs-up-fill"></i><span class="number-likes">'+ number_likes + '</span>');   
+            buttonClicked.addClass('unlike-publication btn-outline-danger').removeClass('like-publication btn-outline-success');
             buttonClicked.prop("disabled", false);
         });
     });
@@ -234,7 +254,7 @@ function publicationButtonClick(){
         $.post('/home/subscribe/', {subscribe_to_id : author_id}, function(data)
         {
             buttonClicked.html("Se désabonner");
-            buttonClicked.removeClass('btn-success').addClass('btn-danger');
+            buttonClicked.removeClass('btn-outline-success').addClass('btn-outline-danger');
             buttonClicked.prop("disabled", false);
             setBtnToUnSub(author_id);
         });
@@ -250,7 +270,7 @@ function publicationButtonClick(){
         $.post('/home/unsubscribe/', {subscribe_to_id : author_id}, function(data)
         {
             buttonClicked.html("S'abonner");
-            buttonClicked.removeClass('unsub btn-danger').addClass('sub btn-success');
+            buttonClicked.removeClass('unsub btn-outline-danger').addClass('sub btn-outline-dark');
             buttonClicked.prop("disabled", false);
             setBtnToSub(author_id);
         });
@@ -259,9 +279,13 @@ function publicationButtonClick(){
 
 //fonction met à jour le bouton s'abonner des publications quand un utilisateur s'abonne à un autre
 function setBtnToUnSub(author_id){
-    $(".publication").each(function(){
-        if(Number.parseInt($(this).data("author_id")) == author_id){
-            $(this).children(".media-body").children("div")
+    $(".publication").each(function()
+    {
+        if(Number.parseInt($(this).data("author_id")) == author_id)
+        {
+            $(this).children(".media-body")
+            .children("h4")
+            .children("div")
             .children(".subscription")
             .addClass("unsub")
             .removeClass("sub")
@@ -272,9 +296,13 @@ function setBtnToUnSub(author_id){
 
 //fonction met à jour le bouton s'abonner des publications quand un utilisateur se désabonne à un autre
 function setBtnToSub(author_id){
-    $(".publication").each(function(){
-        if(Number.parseInt($(this).data("author_id")) == author_id){
-            $(this).children(".media-body").children("div")
+    $(".publication").each(function()
+    {
+        if(Number.parseInt($(this).data("author_id")) == author_id)
+        {
+            $(this).children(".media-body")
+            .children("h4")
+            .children("div")
             .children(".subscription")
             .addClass("sub")
             .removeClass("unsub")

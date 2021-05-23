@@ -114,7 +114,9 @@ function getQuery(queryType, index, userID, searchFor){
                 ORDER BY pub.publication_id DESC;`
             }
         case "nosession":
-            return `SELECT pub.*, u.* FROM publication as pub, user as u 
+            return `SELECT pub.*, u.*, 
+            (SELECT COUNT(*) AS nbr_like FROM publication_reaction AS r WHERE pub.publication_id = r.publication_id) AS nbr_like
+            FROM publication as pub, user as u
             WHERE pub.author_id = u.user_id 
             AND pub.publication_id > ` + index + `
             ORDER BY pub.publication_id DESC;`;
