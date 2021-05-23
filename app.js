@@ -6,7 +6,7 @@ const mysql = require('mysql');
 const md5 = require('md5');
 const multer = require('multer');
 const fs = require('fs');
-//const bodyParser = require('body-parser')
+const bodyParser = require('body-parser')
 
 const app = express();
 
@@ -31,11 +31,13 @@ var upload = multer({ storage: storage });
 
 app.set('view engine','ejs');
 
+//Changez ici les identifiants de votre bdd mySQL si nécessaires.
+//Si des problèmes surviennent durant l'exécution et l'utilisation de la bdd, remplacez 127.0.0.1 par localhost.
 const pool = mysql.createPool(
 {
     host: '127.0.0.1',
     user: 'root',
-    password: 'Nicola$32',
+    password: '',
     database: 'projetsangsiri',
     connectionLimit : 10
 });
